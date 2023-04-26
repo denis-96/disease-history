@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
+    <link rel="stylesheet" href="css/style.min.css" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="container nav_container">
+        <button class="help">
+          <img src="icons/question.svg" alt="help" class="help_img" />
+        </button>
+        <div class="patients">
+          <button class="patients_btn">Пациенты</button>
+          <div class="patients_dropdown">
+            <ul class="patients_dropdown_list">
+              <li class="patients_dropdown_list_item">Пациент</li>
+              <li class="patients_dropdown_list_item">Пациент</li>
+              <li class="patients_dropdown_list_item">Пациент</li>
+            </ul>
+            <hr />
+            <button class="patients_dropdown_addition_btn">Добавить</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section class="disease_info">
+      <div class="container">
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="patient_name">Фамилия и имя</label>
+            <input type="text" id="patient_name" />
+          </div>
+          <div class="disease_info_field small">
+            <label for="patient_age">Возраст</label>
+            <input type="number" id="patient_age" />
+          </div>
+        </div>
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="diagnosis">Диагноз</label>
+            <textarea type="text" id="diagnosis" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="complaints">Жалобы</label>
+            <textarea type="text" id="complaints" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="anamnesis">Анамнез</label>
+            <textarea type="text" id="anamnesis" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="heredity">Наследственность</label>
+            <textarea type="text" id="heredity" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="treatment_plan">План лечения</label>
+            <textarea type="text" id="treatment_plan" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="disease_info_row">
+          <div class="disease_info_field">
+            <label for="comments">Комментарии</label>
+            <textarea type="text" id="comments" rows="2"></textarea>
+          </div>
+        </div>
+        <hr />
+      </div>
+    </section>
+    <section class="disease_history">
+      <div class="container">
+        <div class="disease_history_switch">
+          <button class="btn btn_1 btn_active">Контроли</button>
+          <button class="btn btn_2">Рубрики</button>
+        </div>
+        <div class="disease_history_history">
+          <div class="disease_history_history_tool_bar">
+            <button class="btn">Сравнить</button>
+            <button class="btn" disabled>Удалить</button>
+          </div>
+          <ul class="disease_history_history_timeline">
+            <li class="disease_history_history_timeline_record">
+              <div class="date">12.12.12</div>
+              <div class="content">
+                <div class="content_head">
+                  <input type="checkbox" class="record_checkbox" />
+                  <div class="content_head_text">Целенаправленный опрос</div>
+                </div>
+                <div class="content_body">
+                  <div class="rubric">
+                    <div class="rubric_header">1. Название рубрики</div>
+                    <div class="rubric_descr">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Quasi autem, est et, necessitatibus eius quisquam ex quis
+                      molestiae assumenda ullam a nam? Mollitia cumque fugit
+                      iure quis vitae, nihil dignissimos!
+                    </div>
+                  </div>
+                  <div class="rubric">
+                    <div class="rubric_header">2. Название рубрики</div>
+                    <div class="rubric_descr">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Rem ut saepe nemo accusamus? Cumque, in ab maxime aliquid
+                      quidem et inventore tempore quibusdam, esse exercitationem
+                      architecto veritatis, qui quo voluptatibus!
+                    </div>
+                  </div>
+                  <div class="rubric">
+                    <div class="rubric_header">3. Название рубрики</div>
+                    <div class="rubric_descr">
+                      Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                      Eaque placeat sed, possimus mollitia perferendis
+                      molestias, nulla illum earum aut architecto quas
+                      laudantium ratione reiciendis cum quos? At iure beatae
+                      porro.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="disease_history_history_timeline_record">
+              <div class="date">09.03.23</div>
+              <div class="content">
+                <div class="content_head">
+                  <input type="checkbox" class="record_checkbox" />
+                  <div class="content_head_text">Первичная реакция</div>
+                </div>
+                <div class="content_body">
+                  <div class="rubric">
+                    <div class="rubric_header"></div>
+                    <div class="rubric_descr"></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="disease_history_history_timeline_record">
+              <div class="date">02.12.12</div>
+              <div class="content">
+                <div class="content_head">
+                  <input type="checkbox" class="record_checkbox" />
+                  <div class="content_head_text">Какой-то контроль</div>
+                </div>
+                <div class="content_body">
+                  <div class="rubric">
+                    <div class="rubric_header"></div>
+                    <div class="rubric_descr"></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section class="record_addition"></section>
+    <script src="js/script.js"></script>
+  </body>
+</html>
