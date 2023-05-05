@@ -20,152 +20,297 @@
   </head>
   <body>
     <nav class="nav">
-      <div class="container nav_container">
-        <button class="help">
-          <img src="icons/question.svg" alt="help" class="help_img" />
+      <div class="nav__container container">
+        <button class="nav__btn">
+          <img src="icons/question.svg" alt="help" class="nav__btn-icon" />
         </button>
-        <div class="patients">
-          <button class="patients_btn">Пациенты</button>
-          <div class="patients_dropdown">
-            <ul class="patients_dropdown_list">
-              <li class="patients_dropdown_list_item">Пациент</li>
-              <li class="patients_dropdown_list_item">Пациент</li>
-              <li class="patients_dropdown_list_item">Пациент</li>
+        <div class="nav__dropdown">
+          <button class="nav__dropdown-btn">Пациенты</button>
+          <div class="nav__dropdown-content">
+            <ul class="nav__dropdown-list">
+              <li class="nav__dropdown-item">Имя Фамилия</li>
+              <li class="nav__dropdown-item">Пациент</li>
+              <li class="nav__dropdown-item">Пациент</li>
             </ul>
             <hr />
-            <button class="patients_dropdown_addition_btn">Добавить</button>
+            <button class="nav__dropdown-item nav__dropdown-item_btn">
+              Добавить
+            </button>
           </div>
         </div>
       </div>
     </nav>
-    <section class="disease_info">
+    <section class="disease-info">
       <div class="container">
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="patient_name">Фамилия и имя</label>
-            <input type="text" id="patient_name" />
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="patient_name">Фамилия и имя</label>
+            <input class="input" type="text" id="patient_name" />
           </div>
-          <div class="disease_info_field small">
-            <label for="patient_age">Возраст</label>
-            <input type="number" id="patient_age" />
-          </div>
-        </div>
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="diagnosis">Диагноз</label>
-            <textarea type="text" id="diagnosis" rows="2"></textarea>
+          <div class="disease-info__field disease-info__field_small">
+            <label class="label" for="patient_age">Возраст</label>
+            <input class="input" type="number" id="patient_age" />
           </div>
         </div>
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="complaints">Жалобы</label>
-            <textarea type="text" id="complaints" rows="2"></textarea>
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="diagnosis">Диагноз</label>
+            <textarea
+              class="textarea"
+              type="text"
+              id="diagnosis"
+              rows="2"
+            ></textarea>
           </div>
         </div>
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="anamnesis">Анамнез</label>
-            <textarea type="text" id="anamnesis" rows="2"></textarea>
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="complaints">Жалобы</label>
+            <textarea
+              class="textarea"
+              type="text"
+              id="complaints"
+              rows="2"
+            ></textarea>
           </div>
         </div>
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="heredity">Наследственность</label>
-            <textarea type="text" id="heredity" rows="2"></textarea>
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="anamnesis">Анамнез</label>
+            <textarea
+              class="textarea"
+              type="text"
+              id="anamnesis"
+              rows="2"
+            ></textarea>
           </div>
         </div>
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="treatment_plan">План лечения</label>
-            <textarea type="text" id="treatment_plan" rows="2"></textarea>
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="heredity">Наследственность</label>
+            <textarea
+              class="textarea"
+              type="text"
+              id="heredity"
+              rows="2"
+            ></textarea>
           </div>
         </div>
-        <div class="disease_info_row">
-          <div class="disease_info_field">
-            <label for="comments">Комментарии</label>
-            <textarea type="text" id="comments" rows="2"></textarea>
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="treatment_plan">План лечения</label>
+            <textarea
+              class="textarea"
+              type="text"
+              id="treatment_plan"
+              rows="2"
+            ></textarea>
           </div>
         </div>
-        <hr />
+        <div class="disease-info__row">
+          <div class="disease-info__field">
+            <label class="label" for="comments">Комментарии</label>
+            <textarea
+              class="textarea"
+              type="text"
+              id="comments"
+              rows="2"
+            ></textarea>
+          </div>
+        </div>
+        <div class="disease-info__status-msg">Изменения сохранены</div>
       </div>
     </section>
-    <section class="disease_history">
+    <section class="disease-history">
       <div class="container">
-        <div class="disease_history_switch">
-          <button class="btn btn_1 btn_active">Контроли</button>
-          <button class="btn btn_2">Рубрики</button>
+        <div class="switch">
+          <button class="switch__btn switch__btn_active">Контроли</button>
+          <button class="switch__btn">Рубрики</button>
         </div>
-        <div class="disease_history_history">
-          <div class="disease_history_history_tool_bar">
-            <button class="btn">Сравнить</button>
-            <button class="btn" disabled>Удалить</button>
+        <div class="disease-history__content">
+          <!-- <div class="disease-history__rubric-selection">
+            Выберите рубрику
+            <div class="rubrics-select">
+              <button class="rubrics-select__btn">
+                <span>Выберите рубрику</span>
+                <img src="icons/dropdown-arrow.svg" alt="arrow" />
+              </button>
+              <div class="rubrics-select__content">
+                <ul class="rubrics-select__list">
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Ментальные</summary>
+                      <ul>
+                        <li>Поведенческие симптомы</li>
+                        <li>Страхи</li>
+                        <li>Мании</li>
+                        <li>Психиатрические диагнозы</li>
+                        <li>Слабость нервная</li>
+                        <li>Нарушения сна</li>
+                        <li>Головокружение</li>
+                        <li>Голова</li>
+                        <li>Зрение</li>
+                        <li>Слух</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Весь организм</summary>
+                      <ul>
+                        <li>Лицо</li>
+                        <li>Глаза</li>
+                        <li>Уши</li>
+                        <li>Нос</li>
+                        <li>Рот: запах, привкус</li>
+                        <li>Речь</li>
+                        <li>Зубы</li>
+                        <li>Горло</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Дыхательная</summary>
+                      <ul>
+                        <li>Дыхание</li>
+                        <li>Кашель</li>
+                        <li>Мокрота</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Пищеварительная</summary>
+                      <ul>
+                        <li>Желудок</li>
+                        <li>Живот</li>
+                        <li>Стул</li>
+                        <li>Прямая кишка</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Выделительная система</summary>
+                      <ul>
+                        <li>Моча</li>
+                        <li>Почки</li>
+                        <li>Мочевой пузырь</li>
+                        <li>Уретра</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Репродуктивная</summary>
+                      <ul>
+                        <li>Половые органы</li>
+                        <li>Простата</li>
+                        <li>Молочные железы</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Циркуляторная</summary>
+                      <ul>
+                        <li>Шея</li>
+                        <li>Грудь</li>
+                        <li>Спина</li>
+                        <li>Конечности</li>
+                      </ul>
+                    </details>
+                  </li>
+                  <li class="rubrics-select__item">
+                    <details>
+                      <summary>Сенсорная</summary>
+                      <ul>
+                        <li>Озноб</li>
+                        <li>Лихорадка</li>
+                        <li>Потоотделение</li>
+                        <li>Кожа</li>
+                      </ul>
+                    </details>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div> -->
+          <div class="disease-history__tool-bar">
+            <button class="disease-history__tool-bar-item">Сравнить</button>
+            <button class="disease-history__tool-bar-item">Изменить</button>
+            <button class="disease-history__tool-bar-item" disabled>
+              Удалить
+            </button>
           </div>
-          <ul class="disease_history_history_timeline">
-            <li class="disease_history_history_timeline_record">
-              <div class="date">12.12.12</div>
-              <div class="content">
-                <div class="content_head">
-                  <input type="checkbox" class="record_checkbox" />
-                  <div class="content_head_text">Целенаправленный опрос</div>
+          <ul class="disease-history__timeline">
+            <!-- <li class="rubric-record">
+              <div class="rubric-record__date">12.12.12</div>
+              <div class="rubric-record__control-title">Название контроля</div>
+              <div class="rubric-record__content">
+                Равным образом сложившаяся структура организации представляет
+                собой интересный эксперимент проверки системы обучения кадров,
+                соответствует насущным потребностям
+              </div>
+            </li>
+            <li class="rubric-record">
+              <div class="rubric-record__date">12.12.12</div>
+              <div class="rubric-record__control-title">Название контроля</div>
+              <div class="rubric-record__content">
+                Значимость этих проблем настолько очевидна, что рамки и место
+                обучения кадров представляет собой интересный эксперимент
+                проверки модели развития. Разнообразный и богатый опыт
+                постоянное информационно-пропагандистское обеспечение нашей
+                деятельности в значительной степени обуславливает создание
+                соответствующий
+              </div>
+            </li>
+            <li class="rubric-record">
+              <div class="rubric-record__date">12.12.12</div>
+              <div class="rubric-record__control-title">Название контроля</div>
+              <div class="rubric-record__content">
+                Равным образом сложившаяся структура организации представляет
+                собой интересный
+              </div>
+            </li> -->
+            <li class="control-record">
+              <div class="control-record__date">12.12.12</div>
+              <div class="control-record__content">
+                <div class="control-record__head">
+                  <input class="control-record__checkbox" type="checkbox" />
+                  <div class="control-record__title">
+                    Целенаправленный опрос
+                  </div>
                 </div>
-                <div class="content_body">
-                  <div class="rubric">
-                    <div class="rubric_header">1. Название рубрики</div>
-                    <div class="rubric_descr">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                <div class="control-record__body">
+                  <div class="control-record__rubric">
+                    <div class="control-record__rubric-title">
+                      1. Название рубрики
+                    </div>
+                    <div
+                      class="control-record__rubric-descr textarea"
+                      contenteditable
+                    >
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit
                       Quasi autem, est et, necessitatibus eius quisquam ex quis
-                      molestiae assumenda ullam a nam? Mollitia cumque fugit
+                      molestiae assumenda ullam a nam? Mollitia cumque f ugit
                       iure quis vitae, nihil dignissimos!
                     </div>
-                  </div>
-                  <div class="rubric">
-                    <div class="rubric_header">2. Название рубрики</div>
-                    <div class="rubric_descr">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Rem ut saepe nemo accusamus? Cumque, in ab maxime aliquid
-                      quidem et inventore tempore quibusdam, esse exercitationem
-                      architecto veritatis, qui quo voluptatibus!
+                    <div class="control-record__rubric-status-msg">
+                      Сохранено
                     </div>
                   </div>
-                  <div class="rubric">
-                    <div class="rubric_header">3. Название рубрики</div>
-                    <div class="rubric_descr">
-                      Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                      Eaque placeat sed, possimus mollitia perferendis
-                      molestias, nulla illum earum aut architecto quas
-                      laudantium ratione reiciendis cum quos? At iure beatae
-                      porro.
+                  <div class="control-record__rubric">
+                    <div class="control-record__rubric-title">
+                      1. Название рубрики
                     </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li class="disease_history_history_timeline_record">
-              <div class="date">09.03.23</div>
-              <div class="content">
-                <div class="content_head">
-                  <input type="checkbox" class="record_checkbox" />
-                  <div class="content_head_text">Первичная реакция</div>
-                </div>
-                <div class="content_body">
-                  <div class="rubric">
-                    <div class="rubric_header"></div>
-                    <div class="rubric_descr"></div>
-                  </div>
-                </div>
-              </div>
-            </li>
-            <li class="disease_history_history_timeline_record">
-              <div class="date">02.12.12</div>
-              <div class="content">
-                <div class="content_head">
-                  <input type="checkbox" class="record_checkbox" />
-                  <div class="content_head_text">Какой-то контроль</div>
-                </div>
-                <div class="content_body">
-                  <div class="rubric">
-                    <div class="rubric_header"></div>
-                    <div class="rubric_descr"></div>
+                    <div class="control-record__rubric-descr textarea">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit
+                      Quasi autem, est et, necessitatibus eius quisquam ex quis
+                      molestiae assumenda ullam a nam? Mollitia cumque f ugit
+                      iure quis vitae, nihil dignissimos!
+                    </div>
                   </div>
                 </div>
               </div>
@@ -174,7 +319,215 @@
         </div>
       </div>
     </section>
-    <section class="record_addition"></section>
+    <section class="new-record">
+      <div class="container">
+        <div class="new-record__header">Добавить контроль</div>
+        <input
+          class="input new-record__title"
+          type="text"
+          placeholder="Название"
+        />
+        <div class="new-record__subheader">Изменившиеся рубрики:</div>
+        <div class="new-record__rubric">
+          <div class="rubrics-select">
+            <button class="rubrics-select__btn">
+              <span>Выберите рубрику</span>
+              <img src="icons/dropdown-arrow.svg" alt="arrow" />
+            </button>
+            <div class="rubrics-select__content">
+              <ul class="rubrics-select__list">
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Ментальные</summary>
+                    <ul>
+                      <li>Поведенческие симптомы</li>
+                      <li>Страхи</li>
+                      <li>Мании</li>
+                      <li>Психиатрические диагнозы</li>
+                      <li>Слабость нервная</li>
+                      <li>Нарушения сна</li>
+                      <li>Головокружение</li>
+                      <li>Голова</li>
+                      <li>Зрение</li>
+                      <li>Слух</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Весь организм</summary>
+                    <ul>
+                      <li>Лицо</li>
+                      <li>Глаза</li>
+                      <li>Уши</li>
+                      <li>Нос</li>
+                      <li>Рот: запах, привкус</li>
+                      <li>Речь</li>
+                      <li>Зубы</li>
+                      <li>Горло</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Дыхательная</summary>
+                    <ul>
+                      <li>Дыхание</li>
+                      <li>Кашель</li>
+                      <li>Мокрота</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Пищеварительная</summary>
+                    <ul>
+                      <li>Желудок</li>
+                      <li>Живот</li>
+                      <li>Стул</li>
+                      <li>Прямая кишка</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Выделительная система</summary>
+                    <ul>
+                      <li>Моча</li>
+                      <li>Почки</li>
+                      <li>Мочевой пузырь</li>
+                      <li>Уретра</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Репродуктивная</summary>
+                    <ul>
+                      <li>Половые органы</li>
+                      <li>Простата</li>
+                      <li>Молочные железы</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Циркуляторная</summary>
+                    <ul>
+                      <li>Шея</li>
+                      <li>Грудь</li>
+                      <li>Спина</li>
+                      <li>Конечности</li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="rubrics-select__item">
+                  <details>
+                    <summary>Сенсорная</summary>
+                    <ul>
+                      <li>Озноб</li>
+                      <li>Лихорадка</li>
+                      <li>Потоотделение</li>
+                      <li>Кожа</li>
+                    </ul>
+                  </details>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <textarea
+            class="textarea new-record__rubric-descr"
+            type="text"
+            rows="1"
+            placeholder="Опишите изменения"
+          ></textarea>
+        </div>
+        <button class="new-record__add-rubric-btn">+</button>
+        <button class="new-record__save-btn">Сохранить</button>
+      </div>
+    </section>
+    <div class="modals">
+      <div class="control-compare" style="display: none">
+        <div class="control-compare__head">
+          Сравнение
+          <button class="control-compare__close-btn">&#10006;</button>
+        </div>
+
+        <div class="control-compare__control-titles">
+          <div class="control-compare__control-title">Контроль один</div>
+          <div class="control-compare__control-title">Контроль два</div>
+        </div>
+        <div class="control-compare__rubric">
+          <div class="control-compare__rubric-title">Рубрика 1</div>
+          <div class="control-compare__rubric-body">
+            <div class="control-compare__rubric-descr">
+              Значимость этих проблем настолько очевидна, что рамки и место
+              обучения кадров представляет собой интересный эксперимент проверки
+              модели развития. Разнообразный и богатый опыт постоянное
+              информационно-пропагандистское обеспечение нашей деятельности в
+              значительной степени обуславливает создание соответствующий
+            </div>
+            <div class="control-compare__rubric-descr">
+              Равным образом сложившаяся структура организации представляет
+              собой интересный эксперимент проверки системы обучения кадров,
+              соответствует насущным потребностям
+            </div>
+          </div>
+        </div>
+        <div class="control-compare__rubric">
+          <div class="control-compare__rubric-title">Рубрика 1</div>
+          <div class="control-compare__rubric-body">
+            <div class="control-compare__rubric-descr">
+              Значимость этих проблем настолько очевидна, что рамки и место
+              обучения кадров представляет собой интересный эксперимент проверки
+              модели развития. Разнообразный и богатый опыт постоянное
+              информационно-пропагандистское обеспечение нашей деятельности в
+              значительной степени обуславливает создание соответствующий
+            </div>
+            <div class="control-compare__rubric-descr">
+              Равным образом сложившаяся структура организации представляет
+              собой интересный эксперимент проверки системы обучения кадров,
+              соответствует насущным потребностям
+            </div>
+          </div>
+        </div>
+        <div class="control-compare__rubric">
+          <div class="control-compare__rubric-title">Рубрика 1</div>
+          <div class="control-compare__rubric-body">
+            <div class="control-compare__rubric-descr">
+              Значимость этих проблем настолько очевидна, что рамки и место
+              обучения кадров представляет собой интересный эксперимент проверки
+              модели развития. Разнообразный и богатый опыт постоянное
+              информационно-пропагандистское обеспечение нашей деятельности в
+              значительной степени обуславливает создание соответствующий
+            </div>
+            <div class="control-compare__rubric-descr">
+              Равным образом сложившаяся структура организации представляет
+              собой интересный эксперимент проверки системы обучения кадров,
+              соответствует насущным потребностям
+            </div>
+          </div>
+        </div>
+        <div class="control-compare__rubric">
+          <div class="control-compare__rubric-title">Рубрика 1</div>
+          <div class="control-compare__rubric-body">
+            <div class="control-compare__rubric-descr">
+              Значимость этих проблем настолько очевидна, что рамки и место
+              обучения кадров представляет собой интересный эксперимент проверки
+              модели развития. Разнообразный и богатый опыт постоянное
+              информационно-пропагандистское обеспечение нашей деятельности в
+              значительной степени обуславливает создание соответствующий
+            </div>
+            <div class="control-compare__rubric-descr">
+              Равным образом сложившаяся структура организации представляет
+              собой интересный эксперимент проверки системы обучения кадров,
+              соответствует насущным потребностям
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="js/script.js"></script>
   </body>
 </html>

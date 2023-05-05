@@ -1,0 +1,21 @@
+.disease-info {
+  margin-top: 50px;
+  &__row {
+    display: flex;
+    max-width: 900px;
+    justify-content: center;
+    column-gap: 20px;
+    margin: 20px auto;
+  }
+  &__field {
+    width: 100%;
+    &_small {
+      max-width: 80px;
+    }
+  }
+  &__status-msg {
+    text-align: center;
+    color: #757575;
+    font-size: 14px;
+  }
+}

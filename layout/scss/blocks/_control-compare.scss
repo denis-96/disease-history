@@ -1,0 +1,93 @@
+.control-compare {
+  position: absolute;
+  padding: 20px;
+  z-index: 7;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  overflow-y: scroll;
+  max-width: 1000px;
+  max-height: 85%;
+  border-radius: 10px;
+  border: 1px solid $border-color;
+  background-color: white;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 25px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 25px;
+  }
+  &__head {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 24px;
+  }
+
+  &__close-btn {
+    display: block;
+    position: absolute;
+    right: 0px;
+    border: none;
+    background-color: inherit;
+    padding: 5px;
+    &:hover {
+      color: $accent-color;
+    }
+  }
+  &__control-titles {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+    background-color: $grey-bg;
+    border-radius: 10px;
+    border: 1px solid $border-color;
+  }
+  &__control-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    font-weight: 700;
+    font-size: 18px;
+    &:first-of-type {
+      border-right: 1px solid black;
+    }
+  }
+  &__rubric {
+    margin-top: 20px;
+    border-radius: 10px;
+    border: 1px solid $border-color;
+    &-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: $grey-bg;
+      height: 40px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-bottom: 1px solid $border-color;
+      font-weight: 700;
+    }
+    &-body {
+      display: flex;
+      justify-content: space-between;
+    }
+    &-descr {
+      width: 50%;
+      padding: 15px;
+      text-align: center;
+      &:first-of-type {
+        border-right: 1px solid black;
+      }
+    }
+  }
+}
