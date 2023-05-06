@@ -1,0 +1,9 @@
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
+
+DATABASE_URL = environ.get("DATABASE_URL")
+ASYNC_DB_URL = environ.get("DATABASE_URL").replace(
+    "postgresql://", "postgresql+asyncpg://"
+)
