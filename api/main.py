@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from pydantic import EmailStr, BaseModel
 from uvicorn import run
-from typing import List
+from typing import List, Union
 from dal import DAL
 
 
@@ -15,6 +15,7 @@ class UserCreate(TunedModel):
 
 
 class UserShow(TunedModel):
+    some: Union[int, None] = None
     id: int
     email: EmailStr
 
@@ -34,7 +35,7 @@ app = FastAPI()
 main_router = APIRouter()
 
 
-@main_router.post("/user/create", response_model=UserShow)
+@main_router.post("/user", response_model=UserShow)
 async def create_user(body: UserCreate) -> UserShow:
     new_user = await DAL.create_user(email=body.email)
     return UserShow.from_orm(new_user)
@@ -46,8 +47,7 @@ async def get_patients(user_id: int) -> List[PatientShow]:
     return patients
 
 
-main_router.include_router(main_router, tags=["routes"])
-app.include_router(main_router)
+app.include_router(main_router, tags=["routes"])
 
 if __name__ == "__main__":
     run(app, host="0.0.0.0", port=8000)

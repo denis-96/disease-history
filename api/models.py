@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from typing import List
 from datetime import datetime
 from config import ASYNC_DB_URL
 
@@ -8,15 +9,16 @@ engine = create_async_engine(ASYNC_DB_URL, echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
-    email = Column(String, nullable=False, unique=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(unique=True)
 
-    patients = relationship("Patient", backref="user", lazy="dynamic")
+    patients: Mapped[List["Patient"]] = relationship(backref="user", lazy="dynamic")
 
     def __repr__(self):
         return f"User(id={self.id}, email={self.email})"
