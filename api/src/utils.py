@@ -1,9 +1,8 @@
 from smtplib import SMTP
 from email.message import EmailMessage
 from email.headerregistry import Address
-from os import path
 
-from config import MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD
+from .config import MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD
 
 
 def send_email(
@@ -41,15 +40,3 @@ def send_email(
         server.login(MAIL_USERNAME, MAIL_PASSWORD)
         print("between")
         server.send_message(msg)
-
-
-def send_auth_email(auth_link, recipient_email):
-    subject = "Авторизация"
-    plain_message = (
-        f'Перейдите по ссылке для асторизации на сайте "История болезни"\n{auth_link}'
-    )
-    html_message = ""
-    with open(path.abspath("emails/auth_email.html")) as file:
-        html_message = file.read().replace("auth_link", auth_link)
-
-    send_email(recipient_email, subject, plain_message, html_message)
