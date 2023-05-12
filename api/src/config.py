@@ -4,8 +4,12 @@ from os import environ, getcwd
 
 load_dotenv()
 
-SERVER_HOST = "192.168.0.10"
+SERVER_HOST = "localhost"
 SERVER_PORT = 8000
+FRONTEND_HOST = "localhost"
+FRONTEND_PORT = 3000
+CLIENT_ID = environ.get("CLIENT_ID")
+CLIENT_SECRET = environ.get("CLIENT_SECRET")
 BASE_DIR = getcwd()
 DATABASE_URL = environ.get("DATABASE_URL")
 SECRET_KEY = token_hex(30)

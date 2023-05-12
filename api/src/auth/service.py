@@ -1,15 +1,25 @@
 from fastapi import HTTPException, status
-from pydantic import ValidationError, EmailStr
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from google.oauth2 import id_token
+from google.auth.transport.requests import Request
+from requests import post as post_request
 from datetime import datetime, timedelta
-from os.path import join as join_path
+from typing import Union
 import jwt
 
-from ..config import SECRET_KEY, JWT_ALGORITHM, SERVER_HOST, SERVER_PORT, BASE_DIR
-from ..utils import send_email
+
+from ..config import SECRET_KEY, JWT_ALGORITHM, CLIENT_ID
 from ..models import User
-from .schemas import UserSchema, Token, BearerToken
+from .schemas import (
+    UserSchema,
+    Token,
+    TokenRequest,
+    GoogleIdToken,
+    GoogleUser,
+    AuthSchema,
+)
 
 
 class AuthService:
@@ -26,25 +36,28 @@ class AuthService:
                 SECRET_KEY,
                 algorithms=[JWT_ALGORITHM],
             )
-        except jwt.InvalidKeyError:
+        except jwt.ExpiredSignatureError:
+            exception.detail = "Token has been expired"
+            raise exception from None
+        except jwt.InvalidSignatureError:
+            exception.detail = "Invalid token"
             raise exception from None
 
         user_data = payload.get("user")
-
         try:
-            user = UserSchema.parse_obj(user_data)
+            user = UserSchema(id=user_data.get("id"), email=user_data.get("email"))
         except ValidationError:
-            raise exception from None
+            raise exception
 
         return user
 
     @classmethod
-    def generate_token(cls, user: UserSchema) -> Token:
+    def generate_token(cls, user: UserSchema, expires_minutes: int = 30) -> Token:
         now = datetime.utcnow()
         payload = {
             "iat": now,
             "nbf": now,
-            "exp": now + timedelta(),
+            "exp": now + timedelta(minutes=expires_minutes),
             "sub": str(user.id),
             "user": user.dict(),
         }
@@ -56,19 +69,30 @@ class AuthService:
         return Token(access_token=token)
 
     @classmethod
-    def send_auth_email(cls, recipient_email: EmailStr):
-        token = AuthService.generate_token(UserSchema(email=recipient_email))
-        auth_link = (
-            f"http://{SERVER_HOST}:{SERVER_PORT}/auth?token={token.access_token}"
+    def verify_google_id_token(cls, token: str) -> GoogleUser:
+        try:
+            id_info = id_token.verify_oauth2_token(token, Request(), CLIENT_ID)
+            user = GoogleUser(
+                id=id_info["sub"],
+                email=id_info["email"],
+                email_verified=id_info["email_verified"],
+            )
+        except (ValueError, KeyError):
+            raise HTTPException(403, "Bad code")
+        return user
+
+    @classmethod
+    def get_google_id_token(cls, params: TokenRequest) -> Union[GoogleIdToken, None]:
+        response = post_request(
+            "https://oauth2.googleapis.com/token",
+            data=params.dict(),
         )
-
-        subject = "Авторизация"
-        plain_message = f'Перейдите по ссылке для асторизации на сайте "История болезни"\n{auth_link}'
-        html_message = ""
-        with open(join_path(BASE_DIR, "emails", "auth_email.html")) as file:
-            html_message = file.read().replace("auth_link", auth_link)
-
-        send_email(recipient_email, subject, plain_message, html_message)
+        if response.status_code == 200:
+            token_data = response.json()
+            id_token = token_data.get("id_token")
+            if id_token:
+                return GoogleIdToken(id_token=id_token)
+        raise HTTPException(403, "Bad token parameters")
 
     @classmethod
     async def register_new_user(cls, user_data: UserSchema, db_session: AsyncSession):
@@ -80,20 +104,21 @@ class AuthService:
             await db_session.flush()
 
         token = cls.generate_token(UserSchema.from_orm(user))
-        return BearerToken(access_token=token.access_token)
+        return Token(access_token=token.access_token)
 
     @classmethod
     async def authenticate_user(
-        cls, auth_token: Token, db_session: AsyncSession
-    ) -> BearerToken:
-        user_data = cls.verify_token(auth_token)
+        cls, auth_data: AuthSchema, db_session: AsyncSession
+    ) -> Token:
+        user_data = AuthService.verify_google_id_token(auth_data.google_id_token)
 
-        if user_data.id:
-            async with db_session.begin():
-                user = await db_session.get(User, user.id)
+        async with db_session.begin():
+            user = await db_session.scalar(
+                select(User).filter_by(email=user_data.email)
+            )
 
-            if user:
-                token = cls.generate_token(UserSchema.from_orm(user))
-                return BearerToken(access_token=token.access_token)
+        if user:
+            token = cls.generate_token(UserSchema.from_orm(user))
+            return Token(access_token=token.access_token)
 
         return await cls.register_new_user(user_data, db_session)

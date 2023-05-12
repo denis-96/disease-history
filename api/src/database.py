@@ -1,4 +1,9 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    async_sessionmaker,
+    AsyncSession,
+    AsyncAttrs,
+)
 from sqlalchemy.orm import DeclarativeBase
 
 from .config import DATABASE_URL
@@ -15,7 +20,7 @@ def get_db() -> AsyncSession:
         session.close
 
 
-class Base(DeclarativeBase):
+class Base(DeclarativeBase, AsyncAttrs):
     pass
 
 

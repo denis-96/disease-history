@@ -20,7 +20,7 @@ class Patient(Base):
 
     user: Mapped["User"] = relationship(back_populates="patients")
     treatment_records: Mapped[List["TreatmentRecord"]] = relationship(
-        back_populates="patient", lazy="dynamic"
+        back_populates="patient", cascade="all, delete-orphan"
     )
 
     def __repr__(self):
