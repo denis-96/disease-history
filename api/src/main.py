@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .auth.router import auth_router
 from .patients.router import patients_router
 from .records.router import records_router
+from .rubrics.router import rubrics_router
 
 from .config import CLIENT_ID, CLIENT_SECRET
 
@@ -30,6 +31,7 @@ main_router = APIRouter()
 main_router.include_router(auth_router)
 main_router.include_router(patients_router)
 main_router.include_router(records_router)
+main_router.include_router(rubrics_router)
 
 
 @main_router.get("/")

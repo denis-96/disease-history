@@ -3,9 +3,11 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from typing import List
 
 from ..patients.service import PatientsService
-from ..exceptions import database_error
+from ..rubrics.models import Rubric
+
+from ..exceptions import DatabaseError
 from .schemas import RecordCreate
-from .models import TreatmentRecord, RubricVariant, Rubric
+from .models import TreatmentRecord, RubricVariant
 from .exceptions import RubricNotFound, RecordNotFound, RecordAccessDenied
 
 
@@ -36,7 +38,7 @@ class RecordsService:
             raise RubricNotFound()
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
 
         return record
 
@@ -53,7 +55,7 @@ class RecordsService:
                     raise RecordAccessDenied(record_id)
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
 
         return record
 
@@ -64,7 +66,7 @@ class RecordsService:
                 records = await patient.awaitable_attrs.treatment_records
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
         return records
 
     @classmethod
@@ -74,7 +76,7 @@ class RecordsService:
                 rubric = await db_session.get(Rubric, rubric_id)
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
         if not rubric:
             raise RubricNotFound(rubric_id)
         return rubric

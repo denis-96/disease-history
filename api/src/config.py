@@ -18,3 +18,4 @@ MAIL_HOST = "smtp.gmail.com"
 MAIL_PORT = "465"
 MAIL_USERNAME = environ.get("MAIL_USERNAME")
 MAIL_PASSWORD = environ.get("MAIL_PASSWORD")
+ADMIN_ID = int(environ.get("ADMIN_ID"))

@@ -3,7 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from typing import List
 
 from ..models import User
-from ..exceptions import database_error
+from ..exceptions import DatabaseError
 
 from .models import Patient
 from .schemas import PatientCreate, PatientUpdate, PatientDeleteResponse
@@ -22,7 +22,7 @@ class PatientsService:
                 await db_session.flush()
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
 
         return patient
 
@@ -35,7 +35,7 @@ class PatientsService:
                 patient = await db_session.get(Patient, patient_id)
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
 
         if not patient:
             raise patient_not_found
@@ -51,7 +51,7 @@ class PatientsService:
                 patients = await user.awaitable_attrs.patients
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
         return patients
 
     @classmethod
@@ -65,7 +65,7 @@ class PatientsService:
                 await db_session.flush()
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
 
         return {"deleted_patient_id": patient_id}
 
@@ -84,6 +84,6 @@ class PatientsService:
                 await db_session.flush()
         except SQLAlchemyError:
             await db_session.rollback()
-            raise database_error
+            raise DatabaseError()
 
         return patient
