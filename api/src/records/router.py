@@ -9,14 +9,7 @@ from ..patients.dependencies import get_patient
 from ..patients.models import Patient
 from .dependencies import get_record
 from .models import TreatmentRecord
-from .schemas import (
-    RecordCreate,
-    RecordDeleteResponse,
-    RecordShow,
-    RecordUpdate,
-    RubricVariantCreate,
-    RubricVariantShow,
-)
+from .schemas import RecordCreate, RecordDeleteResponse, RecordShow, RecordUpdate
 from .service import RecordsService
 
 records_router = APIRouter(prefix="/record", tags=["Records"])
@@ -61,14 +54,3 @@ async def delete_record(
     db_session: Annotated[AsyncSession, Depends(get_db)],
 ) -> RecordDeleteResponse:
     return await RecordsService.delete_record(record, db_session)
-
-
-@records_router.post("/rubric-variants")
-async def create_rubric_variants(
-    rubric_variants_data: List[RubricVariantCreate],
-    record: Annotated[TreatmentRecord, Depends(get_record)],
-    db_session: Annotated[AsyncSession, Depends(get_db)],
-) -> List[RubricVariantShow]:
-    return await RecordsService.create_rubric_variants(
-        rubric_variants_data, record, db_session
-    )

@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,8 +14,8 @@ from .schemas import (
     RecordCreate,
     RecordDeleteResponse,
     RecordUpdate,
-    RubricVariantCreate,
-    RubricVariantUpdate,
+    RubricVariantsCreate,
+    RubricVariantsUpdate,
 )
 
 
@@ -35,7 +36,7 @@ class RecordsService:
             await db_session.rollback()
             raise DatabaseError()
 
-        await cls.create_rubric_variants(record_data.rubrics, record, db_session)
+        await cls._create_rubric_variants(record_data.rubrics, record, db_session)
         return record
 
     @classmethod
@@ -91,22 +92,25 @@ class RecordsService:
     ) -> TreatmentRecord:
         try:
             async with db_session.begin():
-                params_dict = updated_record_params.dict(
-                    exclude_none=True, exclude={"rubrics"}
+                updated_record_params.title and setattr(
+                    record, "title", updated_record_params.title
                 )
-                for param in params_dict:
-                    setattr(record, param, params_dict[param])
                 await db_session.flush()
+
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
 
+        updated_record_params.rubrics and await cls._update_rubric_variants(
+            updated_record_params.rubrics, record, db_session
+        )
+
         return record
 
     @classmethod
-    async def create_rubric_variants(
+    async def _create_rubric_variants(
         cls,
-        rubric_variants_data: List[RubricVariantCreate],
+        rubric_variants_data: RubricVariantsCreate,
         record: TreatmentRecord,
         db_session: AsyncSession,
     ) -> List[RubricVariant]:
@@ -121,16 +125,33 @@ class RecordsService:
             async with db_session.begin():
                 (await record.awaitable_attrs.rubrics).extend(rubric_variants)
                 await db_session.flush()
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
         return rubric_variants
 
     @classmethod
-    async def update_rubric_variants(
+    async def _update_rubric_variants(
         cls,
-        updated_rubric_variants: List[RubricVariantUpdate],
+        updated_rubric_variants: RubricVariantsUpdate,
         record: TreatmentRecord,
         db_session: AsyncSession,
     ) -> List[RubricVariant]:
-        pass
+        uncreated_variants = []
+        try:
+            async with db_session.begin():
+                for variant in updated_rubric_variants:
+                    rubric_variant = await db_session.scalar(
+                        select(RubricVariant).filter_by(
+                            rubric_id=variant.rubric_id, record=record
+                        )
+                    )
+                    if rubric_variant:
+                        rubric_variant.description = variant.description
+                        await db_session.flush()
+                    else:
+                        uncreated_variants.append(variant)
+        except SQLAlchemyError:
+            await db_session.rollback()
+            raise DatabaseError()
+        return await cls._create_rubric_variants(uncreated_variants, record, db_session)

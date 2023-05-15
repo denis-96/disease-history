@@ -2,7 +2,7 @@ from email.headerregistry import Address
 from email.message import EmailMessage
 from smtplib import SMTP
 
-from .config import MAIL_HOST, MAIL_PASSWORD, MAIL_USERNAME
+from .config import MAIL_HOST, MAIL_PASSWORD, MAIL_PORT, MAIL_USERNAME
 
 
 def send_email(
@@ -35,7 +35,7 @@ def send_email(
                 )
 
     # Create an SMTP session
-    with SMTP(MAIL_HOST, 587) as server:
+    with SMTP(MAIL_HOST, MAIL_PORT) as server:
         server.starttls()  # Enable TLS encryption
         server.login(MAIL_USERNAME, MAIL_PASSWORD)
         print("between")
