@@ -1,10 +1,10 @@
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
-from ..database import get_db
-from ..auth.dependencies import get_current_user_id
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..auth.dependencies import get_current_user_id
+from ..database import get_db
 from .models import Patient
 from .service import PatientsService
 

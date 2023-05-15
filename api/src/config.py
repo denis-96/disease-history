@@ -1,6 +1,7 @@
-from dotenv import load_dotenv
-from secrets import token_hex
 from os import environ, getcwd
+from secrets import token_hex
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -8,8 +9,14 @@ SERVER_HOST = "localhost"
 SERVER_PORT = 8000
 FRONTEND_HOST = "localhost"
 FRONTEND_PORT = 3000
-CLIENT_ID = environ.get("CLIENT_ID")
-CLIENT_SECRET = environ.get("CLIENT_SECRET")
+
+OAUTH2_CLIENT_ID = environ.get("OAUTH2_CLIENT_ID")
+OAUTH2_CLIENT_SECRET = environ.get("OAUTH2_CLIENT_SECRET")
+OAUTH2_AUTH_URL = environ.get("OAUTH2_AUTH_URL")
+OAUTH2_TOKEN_URL = environ.get("OAUTH2_TOKEN_URL")
+OAUTH2_CERTS_URL = environ.get("OAUTH2_CERTS_URL")
+
+
 BASE_DIR = getcwd()
 DATABASE_URL = environ.get("DATABASE_URL")
 SECRET_KEY = token_hex(30)

@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field, validator
 from datetime import datetime
 from typing import List, Union
+
+from pydantic import BaseModel, Field, validator
 
 
 class RubricVariantCreate(BaseModel):

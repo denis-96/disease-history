@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, AnyHttpUrl
+from pydantic import AnyHttpUrl, BaseModel, EmailStr
 
 
 class UserSchema(BaseModel):

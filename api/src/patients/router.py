@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated, List
 
-from ..models import User
-from ..database import get_db
-from ..auth.dependencies import get_current_user_id, get_current_db_user
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from .schemas import PatientCreate, PatientShow, PatientUpdate, PatientDeleteResponse
-from .models import Patient
-from .service import PatientsService
+from ..auth.dependencies import get_current_db_user, get_current_user_id
+from ..database import get_db
+from ..models import User
 from .dependencies import get_patient
+from .models import Patient
+from .schemas import PatientCreate, PatientDeleteResponse, PatientShow, PatientUpdate
+from .service import PatientsService
 
 patients_router = APIRouter(prefix="/patient", tags=["Patients"])
 

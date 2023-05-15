@@ -1,21 +1,21 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
 from typing import List
 
-from ..exceptions import DatabaseError
-from ..patients.service import PatientsService
-from ..patients.models import Patient
-from ..rubrics.service import RubricsService
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..exceptions import DatabaseError
+from ..patients.models import Patient
+from ..patients.service import PatientsService
+from ..rubrics.service import RubricsService
+from .exceptions import RecordAccessDenied, RecordNotFound
+from .models import RubricVariant, TreatmentRecord
 from .schemas import (
     RecordCreate,
+    RecordDeleteResponse,
     RecordUpdate,
     RubricVariantCreate,
     RubricVariantUpdate,
-    RecordDeleteResponse,
 )
-from .models import TreatmentRecord, RubricVariant
-from .exceptions import RecordNotFound, RecordAccessDenied
 
 
 class RecordsService:

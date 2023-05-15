@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, Form
-from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
+from fastapi import APIRouter, Depends, Form, HTTPException
+from pydantic import ValidationError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..database import get_db
-from .service import AuthService
-from .schemas import TokenRequest, AuthSchema, CheckAuthResponse, Token, UserSchema
 from .dependencies import get_current_user
+from .schemas import AuthSchema, CheckAuthResponse, Token, TokenRequest, UserSchema
+from .service import AuthService
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -37,7 +38,7 @@ async def token(
         redirect_uri=redirect_uri,
     )
     try:
-        google_id_token = AuthService.get_google_id_token(token_params)
+        google_id_token = await AuthService.get_google_id_token(token_params)
     except ValidationError:
         raise HTTPException(400, detail="Invalid data")
     return await AuthService.authenticate_user(

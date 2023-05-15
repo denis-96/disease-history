@@ -1,16 +1,17 @@
+from typing import Annotated
+
 from fastapi import Depends
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Annotated
 
+from ..config import OAUTH2_AUTH_URL
 from ..database import get_db
 from ..models import User
+from .schemas import Token, UserSchema
 from .service import AuthService
-from .schemas import UserSchema, Token
-
 
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl="https://accounts.google.com/o/oauth2/auth",
+    authorizationUrl=OAUTH2_AUTH_URL,
     tokenUrl="/auth/token",
 )
 

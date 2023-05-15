@@ -1,35 +1,42 @@
-from fastapi import HTTPException, status
-from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from google.oauth2 import id_token
-from google.auth.transport.requests import Request
-from requests import post as post_request
 from datetime import datetime, timedelta
 from typing import Union
+
 import jwt
+from cryptography.x509 import load_pem_x509_certificate
+from httpx import AsyncClient, codes
+from pydantic import ValidationError
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-
-from ..config import SECRET_KEY, JWT_ALGORITHM, CLIENT_ID
+from ..config import (
+    JWT_ALGORITHM,
+    OAUTH2_CERTS_URL,
+    OAUTH2_CLIENT_ID,
+    OAUTH2_TOKEN_URL,
+    SECRET_KEY,
+)
 from ..models import User
+from .exceptions import (
+    CertsFetchingError,
+    ExpiredToken,
+    InvalidCredentianls,
+    InvalidGoogleToken,
+    InvalidParamsForToken,
+    InvalidToken,
+)
 from .schemas import (
-    UserSchema,
-    Token,
-    TokenRequest,
+    AuthSchema,
     GoogleIdToken,
     GoogleUser,
-    AuthSchema,
+    Token,
+    TokenRequest,
+    UserSchema,
 )
 
 
 class AuthService:
     @classmethod
     def verify_token(cls, token: Token) -> UserSchema:
-        exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
         try:
             payload = jwt.decode(
                 token.access_token,
@@ -37,17 +44,14 @@ class AuthService:
                 algorithms=[JWT_ALGORITHM],
             )
         except jwt.ExpiredSignatureError:
-            exception.detail = "Token has been expired"
-            raise exception from None
+            raise InvalidToken()
         except jwt.InvalidSignatureError:
-            exception.detail = "Invalid token"
-            raise exception from None
-
+            raise ExpiredToken()
         user_data = payload.get("user")
         try:
             user = UserSchema(id=user_data.get("id"), email=user_data.get("email"))
         except ValidationError:
-            raise exception
+            raise InvalidCredentianls()
 
         return user
 
@@ -69,30 +73,51 @@ class AuthService:
         return Token(access_token=token)
 
     @classmethod
-    def verify_google_id_token(cls, token: str) -> GoogleUser:
+    async def verify_google_id_token(cls, token: str) -> GoogleUser:
+        async with AsyncClient() as client:
+            certs_response = await client.get(OAUTH2_CERTS_URL)
+            if certs_response.status_code != codes.OK:
+                raise CertsFetchingError()
+            certs = certs_response.json()
         try:
-            id_info = id_token.verify_oauth2_token(token, Request(), CLIENT_ID)
+            token_header = jwt.get_unverified_header(token)
+            token_key = load_pem_x509_certificate(
+                bytes(certs[token_header["kid"]], encoding="utf-8")
+            ).public_key()
+            id_info = jwt.decode(
+                token,
+                key=token_key,
+                algorithms=[token_header["alg"]],
+                audience=OAUTH2_CLIENT_ID,
+            )
             user = GoogleUser(
                 id=id_info["sub"],
                 email=id_info["email"],
                 email_verified=id_info["email_verified"],
             )
-        except (ValueError, KeyError):
-            raise HTTPException(403, "Bad code")
+        except (
+            jwt.PyJWTError,
+            KeyError,
+            ValueError,
+        ):
+            raise InvalidGoogleToken()
         return user
 
     @classmethod
-    def get_google_id_token(cls, params: TokenRequest) -> Union[GoogleIdToken, None]:
-        response = post_request(
-            "https://oauth2.googleapis.com/token",
-            data=params.dict(),
-        )
-        if response.status_code == 200:
+    async def get_google_id_token(
+        cls, params: TokenRequest
+    ) -> Union[GoogleIdToken, None]:
+        async with AsyncClient() as client:
+            response = await client.post(
+                OAUTH2_TOKEN_URL,
+                data=params.dict(),
+            )
+        if response.status_code == codes.OK:
             token_data = response.json()
             id_token = token_data.get("id_token")
             if id_token:
                 return GoogleIdToken(id_token=id_token)
-        raise HTTPException(403, "Bad token parameters")
+        raise InvalidParamsForToken()
 
     @classmethod
     async def register_new_user(cls, user_data: UserSchema, db_session: AsyncSession):
@@ -110,7 +135,7 @@ class AuthService:
     async def authenticate_user(
         cls, auth_data: AuthSchema, db_session: AsyncSession
     ) -> Token:
-        user_data = AuthService.verify_google_id_token(auth_data.google_id_token)
+        user_data = await AuthService.verify_google_id_token(auth_data.google_id_token)
 
         async with db_session.begin():
             user = await db_session.scalar(

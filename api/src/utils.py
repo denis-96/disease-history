@@ -1,8 +1,8 @@
-from smtplib import SMTP
-from email.message import EmailMessage
 from email.headerregistry import Address
+from email.message import EmailMessage
+from smtplib import SMTP
 
-from .config import MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD
+from .config import MAIL_HOST, MAIL_PASSWORD, MAIL_USERNAME
 
 
 def send_email(

@@ -1,18 +1,17 @@
-from fastapi import FastAPI, APIRouter
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from .auth.router import auth_router
+from .config import OAUTH2_CLIENT_ID, OAUTH2_CLIENT_SECRET
 from .patients.router import patients_router
 from .records.router import records_router
 from .rubrics.router import rubrics_router
 
-from .config import CLIENT_ID, CLIENT_SECRET
-
 app = FastAPI(
     swagger_ui_init_oauth={
-        "clientId": CLIENT_ID,
-        "clientSecret": CLIENT_SECRET,
+        "clientId": OAUTH2_CLIENT_ID,
+        "clientSecret": OAUTH2_CLIENT_SECRET,
         "scopes": "email",
     },
 )

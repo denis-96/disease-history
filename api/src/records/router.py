@@ -1,23 +1,23 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated, List
 
-from ..database import get_db
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..auth.dependencies import get_current_user_id
+from ..database import get_db
 from ..patients.dependencies import get_patient
 from ..patients.models import Patient
-
+from .dependencies import get_record
 from .models import TreatmentRecord
 from .schemas import (
     RecordCreate,
+    RecordDeleteResponse,
     RecordShow,
     RecordUpdate,
-    RecordDeleteResponse,
     RubricVariantCreate,
     RubricVariantShow,
 )
 from .service import RecordsService
-from .dependencies import get_record
 
 records_router = APIRouter(prefix="/record", tags=["Records"])
 
