@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, func, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from typing import List
@@ -39,6 +39,8 @@ class RubricVariant(Base):
 
     record: Mapped["TreatmentRecord"] = relationship(back_populates="rubrics")
     rubric: Mapped["Rubric"] = relationship("Rubric")
+
+    __table_args__ = (UniqueConstraint("rubric_id", "record_id", name="rub_id_rec_id"),)
 
     def __repr__(self):
         return f"RubricVariant(id={self.id}, rubric={self.rubric}, description={self.description})"

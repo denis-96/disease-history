@@ -10,8 +10,13 @@ services:
       - POSTGRES_DB=postgres
     ports:
       - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
     networks:
       - custom
+volumes:
+  db:
+    driver: local
 networks:
   custom:
     driver: bridge

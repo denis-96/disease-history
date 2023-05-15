@@ -7,7 +7,7 @@ from ..exceptions import DatabaseError
 
 from .models import Patient
 from .schemas import PatientCreate, PatientUpdate, PatientDeleteResponse
-from .exceptions import patient_access_denied, patient_not_found
+from .exceptions import PatientAccessDenied, PatientNotFound
 
 
 class PatientsService:
@@ -38,9 +38,9 @@ class PatientsService:
             raise DatabaseError()
 
         if not patient:
-            raise patient_not_found
+            raise PatientNotFound(patient_id)
         if patient.user_id != user_id:
-            raise patient_access_denied
+            raise PatientAccessDenied(patient_id)
 
         return patient
 
@@ -67,7 +67,7 @@ class PatientsService:
             await db_session.rollback()
             raise DatabaseError()
 
-        return {"deleted_patient_id": patient_id}
+        return PatientDeleteResponse(deleted_patient_id=patient_id)
 
     @classmethod
     async def update_patient(

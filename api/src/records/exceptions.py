@@ -1,14 +1,6 @@
 from fastapi import HTTPException, status
 
 
-class RubricNotFound(HTTPException):
-    def __init__(self, rubric_id: int):
-        super().__init__(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Rubric with id {rubric_id} does not exist.",
-        )
-
-
 class RecordNotFound(HTTPException):
     def __init__(self, record_id):
         super().__init__(

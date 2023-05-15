@@ -31,7 +31,9 @@ class RubricsService:
     async def create_rubric(
         cls, rubric_data: RubricCreate, db_session: AsyncSession
     ) -> Rubric:
-        rubric_section = cls.get_rubric_section(rubric_data.section_id, db_session)
+        rubric_section = await cls.get_rubric_section(
+            rubric_data.section_id, db_session
+        )
         try:
             async with db_session.begin():
                 rubric = Rubric(title=rubric_data.title, section=rubric_section)
@@ -50,11 +52,11 @@ class RubricsService:
         try:
             async with db_session.begin():
                 rubric_section = await db_session.get(RubricSection, section_id)
-                if not rubric_section:
-                    raise RubricSectionNotFound(section_id)
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
+        if not rubric_section:
+            raise RubricSectionNotFound(section_id)
         return rubric_section
 
     @classmethod
@@ -62,11 +64,12 @@ class RubricsService:
         try:
             async with db_session.begin():
                 rubric = await db_session.get(Rubric, rubric_id)
-                if not rubric:
-                    raise RubricNotFound(rubric_id)
+
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
+        if not rubric:
+            raise RubricNotFound(rubric_id)
         return rubric
 
     @classmethod
@@ -75,17 +78,10 @@ class RubricsService:
     ) -> List[RubricSection]:
         try:
             async with db_session.begin():
-                sections_with_rubrics = (
-                    (
-                        await db_session.scalars(
-                            select(RubricSection).options(
-                                joinedload(RubricSection.rubrics)
-                            )
-                        )
-                    )
-                    .unique()
-                    .fetchall()
+                sections_with_rubrics = await db_session.scalars(
+                    select(RubricSection).options(joinedload(RubricSection.rubrics))
                 )
+                sections_with_rubrics = sections_with_rubrics.unique().fetchall()
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()

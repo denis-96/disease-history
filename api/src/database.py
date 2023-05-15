@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncAttrs,
 )
+
 from sqlalchemy.orm import DeclarativeBase
 
 from .config import DATABASE_URL

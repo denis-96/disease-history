@@ -17,7 +17,7 @@ app = FastAPI(
     },
 )
 
-origins = ["http://localhost", "http://localhost:3000", "http://192.168.0.10:3000", "*"]
+origins = ["http://localhost", "http://localhost:3000", "http://192.168.0.10:3000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +28,7 @@ app.add_middleware(
 )
 
 main_router = APIRouter()
+
 main_router.include_router(auth_router)
 main_router.include_router(patients_router)
 main_router.include_router(records_router)

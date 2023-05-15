@@ -8,7 +8,14 @@ from ..patients.dependencies import get_patient
 from ..patients.models import Patient
 
 from .models import TreatmentRecord
-from .schemas import RecordCreate, RecordShow
+from .schemas import (
+    RecordCreate,
+    RecordShow,
+    RecordUpdate,
+    RecordDeleteResponse,
+    RubricVariantCreate,
+    RubricVariantShow,
+)
 from .service import RecordsService
 from .dependencies import get_record
 
@@ -40,10 +47,28 @@ async def create_record(
 
 
 @records_router.patch("")
-async def create_record():
-    pass
+async def update_record(
+    updated_record_params: RecordUpdate,
+    record: Annotated[TreatmentRecord, Depends(get_record)],
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+) -> RecordShow:
+    return await RecordsService.update_record(updated_record_params, record, db_session)
 
 
 @records_router.delete("")
-async def create_record():
-    pass
+async def delete_record(
+    record: Annotated[TreatmentRecord, Depends(get_record)],
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+) -> RecordDeleteResponse:
+    return await RecordsService.delete_record(record, db_session)
+
+
+@records_router.post("/rubric-variants")
+async def create_rubric_variants(
+    rubric_variants_data: List[RubricVariantCreate],
+    record: Annotated[TreatmentRecord, Depends(get_record)],
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+) -> List[RubricVariantShow]:
+    return await RecordsService.create_rubric_variants(
+        rubric_variants_data, record, db_session
+    )
