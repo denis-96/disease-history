@@ -1,36 +1,37 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel, PositiveInt, constr
 
 
 class RubricSectionCreate(BaseModel):
-    title: str
+    title: constr(min_length=3)
 
 
 class RubricSectionShow(BaseModel):
-    id: int
-    title: str
+    id: PositiveInt
+    title: constr(min_length=3)
 
     class Config:
         orm_mode = True
 
 
 class RubricCreate(BaseModel):
-    section_id: int
-    title: str
+    section_id: PositiveInt
+    title: constr(min_length=3)
 
 
 class RubricShow(BaseModel):
-    id: int
-    section_id: int
-    title: str
+    id: PositiveInt
+    section_id: PositiveInt
+    title: constr(min_length=3)
 
     class Config:
         orm_mode = True
 
 
 class SectionWithRubrics(BaseModel):
-    id: int
-    title: str
+    id: PositiveInt
+    title: constr(min_length=3)
     rubrics: List[RubricShow]
 
     class Config:

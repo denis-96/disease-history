@@ -1,11 +1,30 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import "./Nav.scss";
 import questionIcon from "../assets/question.svg";
 import Help from "./Modals/Help";
+import { PATIENTS } from "../apiEndpoints";
+import { tokenContext } from "../App";
 
-function Nav() {
+function Nav({ onPatientSelect }) {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [patients, setPatients] = useState(null);
+  const { token } = useContext(tokenContext);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(PATIENTS.ALL, {
+        method: "GET",
+        credentials: "include",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const json = await response.json();
+        setPatients(json);
+      }
+    })();
+  }, [token]);
+
   return (
     <nav className="nav">
       <div className="nav__container container">
@@ -16,9 +35,16 @@ function Nav() {
           <button className="nav__dropdown-btn">Пациенты</button>
           <div className="nav__dropdown-content">
             <ul className="nav__dropdown-list">
-              <li className="nav__dropdown-item">Имя Фамилия</li>
-              <li className="nav__dropdown-item">Пациент</li>
-              <li className="nav__dropdown-item">Пациент</li>
+              {patients &&
+                patients.map((patient) => (
+                  <li
+                    key={patient.id}
+                    onClick={() => onPatientSelect(patient)}
+                    className="nav__dropdown-item"
+                  >
+                    {patient.full_name}
+                  </li>
+                ))}
             </ul>
             <hr />
             <button className="nav__dropdown-item nav__dropdown-item_btn">

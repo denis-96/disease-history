@@ -1,49 +1,57 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import joinedload
-from sqlalchemy import select
 from typing import List
 
-from ..exceptions import DatabaseError
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
-from .schemas import RubricSectionCreate, RubricCreate
-from .models import RubricSection, Rubric
-from .exceptions import RubricSectionNotFound, RubricNotFound
+from ..exceptions import DatabaseError
+from .exceptions import RubricNotFound, RubricSectionNotFound
+from .models import Rubric, RubricSection
+from .schemas import RubricCreate, RubricSectionCreate
 
 
 class RubricsService:
     @classmethod
-    async def create_rubric_section(
-        cls, section_data: RubricSectionCreate, db_session: AsyncSession
-    ) -> RubricSection:
+    async def create_rubric_sections(
+        cls, sections_data: List[RubricSectionCreate], db_session: AsyncSession
+    ) -> List[RubricSection]:
+        sections = [RubricSection(**section.dict()) for section in sections_data]
         try:
             async with db_session.begin():
-                section = RubricSection(**section_data.dict())
-                db_session.add(section)
+                db_session.add_all(sections)
                 await db_session.flush()
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
 
-        return section
+        return sections
 
     @classmethod
-    async def create_rubric(
-        cls, rubric_data: RubricCreate, db_session: AsyncSession
-    ) -> Rubric:
-        rubric_section = await cls.get_rubric_section(
-            rubric_data.section_id, db_session
-        )
+    async def create_rubrics(
+        cls, rubrics_data: List[RubricCreate], db_session: AsyncSession
+    ) -> List[Rubric]:
+        sections = set((rubric.section_id for rubric in rubrics_data))
+        [
+            await cls.get_rubric_section(section_id, db_session)
+            for section_id in sections
+        ]
+        rubrics = [
+            Rubric(
+                title=rubric.title,
+                section_id=rubric.section_id,
+            )
+            for rubric in rubrics_data
+        ]
         try:
             async with db_session.begin():
-                rubric = Rubric(title=rubric_data.title, section=rubric_section)
-                db_session.add(rubric)
+                db_session.add_all(rubrics)
                 await db_session.flush()
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
 
-        return rubric
+        return rubrics
 
     @classmethod
     async def get_rubric_section(

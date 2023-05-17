@@ -1,3 +1,5 @@
+from typing import Union
+
 from pydantic import AnyHttpUrl, BaseModel, EmailStr
 
 
@@ -24,9 +26,23 @@ class AuthSchema(BaseModel):
     google_id_token: str
 
 
-class Token(BaseModel):
+class AccessToken(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class AuthTokens(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+class RefreshTokenCookie(BaseModel):
+    key: str = "refreshToken"
+    httponly: bool = True
+    samesite: str = "none"
+    secure: bool = True
+    value: Union[str, None]
+    max_age: Union[int, None]
 
 
 class GoogleIdToken(BaseModel):

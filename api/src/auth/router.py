@@ -1,12 +1,23 @@
-from typing import Annotated
+from typing import Annotated, Union
 
-from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi import APIRouter, Cookie, Depends, Form, HTTPException, Response
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
-from .dependencies import get_current_user
-from .schemas import AuthSchema, CheckAuthResponse, Token, TokenRequest, UserSchema
+from .dependencies import (
+    get_current_user,
+    get_refresh_token,
+    get_user_from_refresh_token,
+)
+from .models import RefreshToken
+from .schemas import (
+    AccessToken,
+    AuthSchema,
+    CheckAuthResponse,
+    TokenRequest,
+    UserSchema,
+)
 from .service import AuthService
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -14,11 +25,25 @@ auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @auth_router.post("")
 async def auth(
-    auth_data: AuthSchema, db_session: Annotated[AsyncSession, Depends(get_db)]
-) -> Token:
-    return await AuthService.authenticate_user(
+    auth_data: AuthSchema,
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+    response: Response,
+    old_refresh_token: Annotated[
+        Union[str, None], Cookie(..., alias="refreshToken")
+    ] = None,
+) -> AccessToken:
+    if old_refresh_token:
+        await AuthService.expire_refresh_token(old_refresh_token, db_session)
+
+    auth_tokens = await AuthService.authenticate_user(
         auth_data=auth_data, db_session=db_session
     )
+    response.set_cookie(
+        **AuthService.generate_refresh_token_cookie(auth_tokens.refresh_token).dict(
+            exclude_none=True
+        )
+    )
+    return AccessToken(access_token=auth_tokens.access_token)
 
 
 @auth_router.post("/token")
@@ -29,7 +54,14 @@ async def token(
     client_secret: Annotated[str, Form()],
     redirect_uri: Annotated[str, Form()],
     db_session: Annotated[AsyncSession, Depends(get_db)],
-) -> Token:
+    response: Response,
+    old_refresh_token: Annotated[
+        Union[str, None], Cookie(..., alias="refreshToken")
+    ] = None,
+) -> AccessToken:
+    if old_refresh_token:
+        await AuthService.expire_refresh_token(old_refresh_token, db_session)
+
     token_params = TokenRequest(
         grant_type=grant_type,
         code=code,
@@ -41,9 +73,33 @@ async def token(
         google_id_token = await AuthService.get_google_id_token(token_params)
     except ValidationError:
         raise HTTPException(400, detail="Invalid data")
-    return await AuthService.authenticate_user(
+    auth_tokens = await AuthService.authenticate_user(
         AuthSchema(google_id_token=google_id_token.id_token), db_session
     )
+
+    response.set_cookie(
+        **AuthService.generate_refresh_token_cookie(auth_tokens.refresh_token).dict(
+            exclude_none=True
+        )
+    )
+    return AccessToken(access_token=auth_tokens.access_token)
+
+
+@auth_router.get("/token/refresh")
+async def refresh_token(
+    old_refresh_token: Annotated[RefreshToken, Depends(get_refresh_token)],
+    user: Annotated[UserSchema, Depends(get_user_from_refresh_token)],
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+    response: Response,
+) -> AccessToken:
+    await AuthService.expire_refresh_token(old_refresh_token, db_session)
+    auth_tokens = await AuthService.create_auth_tokens(user, db_session)
+    response.set_cookie(
+        **AuthService.generate_refresh_token_cookie(auth_tokens.refresh_token).dict(
+            exclude_none=True
+        )
+    )
+    return AccessToken(access_token=auth_tokens.access_token)
 
 
 @auth_router.get("/check")
@@ -51,3 +107,17 @@ async def check_auth(
     user: Annotated[UserSchema, Depends(get_current_user)]
 ) -> CheckAuthResponse:
     return CheckAuthResponse(authenticated=True, user=user)
+
+
+@auth_router.get("/logout")
+async def logout(
+    refresh_token: Annotated[RefreshToken, Depends(get_refresh_token)],
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+    response: Response,
+) -> None:
+    await AuthService.expire_refresh_token(refresh_token, db_session)
+    response.delete_cookie(
+        **AuthService.generate_refresh_token_cookie(
+            refresh_token.refresh_token, expired=True
+        ).dict(exclude_none=True)
+    )

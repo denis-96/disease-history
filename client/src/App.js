@@ -1,51 +1,45 @@
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 import "./App.scss";
 
-import { fetchAuthToken } from "./utils";
-import { CHECK_AUTH_URL } from "./constants";
+import { isTokenExpired, refreshToken } from "./utils";
+import { AUTH } from "./apiEndpoints";
 
-import Nav from "./components/Nav";
-import Disease from "./components/Disease/Disease";
-import Login from "./components/Login";
+import LoginPage from "./pages/Login/Login";
+import MainPage from "./pages/Main/Main";
+
+const tokenContext = createContext(null);
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(null);
+  const [isUserAuthorized, setIsUserAuthorized] = useState(false);
 
-  const login = () => {
-    setIsLoading(true);
-    const token = fetchAuthToken();
-    if (token) {
-      fetch(CHECK_AUTH_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          json.authenticated && setCurrentUser(json.user);
-          setIsLoading(false);
-        });
+  useEffect(() => {
+    if (!token || isTokenExpired(token)) {
+      refreshToken(setToken);
+      return;
     }
-  };
 
-  useEffect(login, []);
+    fetch(AUTH.CHECK, {
+      method: "GET",
+      credentials: "include",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        setIsUserAuthorized(response.ok);
+        return response.json();
+      })
+      .then((json) => console.log(json));
+  }, [token]);
 
   return (
     <div className="app">
-      {currentUser ? (
-        <>
-          <Nav />
-          <Disease />
-        </>
-      ) : isLoading ? (
-        <h1>Loading...</h1>
-      ) : (
-        <Login onLogin={login} />
-      )}
+      <tokenContext.Provider value={{ token, setToken }}>
+        {isUserAuthorized ? <MainPage /> : <LoginPage />}
+      </tokenContext.Provider>
     </div>
   );
 }
 
 export default App;
+export { tokenContext };

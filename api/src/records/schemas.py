@@ -1,24 +1,26 @@
 from datetime import datetime
 from typing import List, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, PositiveInt, constr, validator
 
 # Rubric Variants
 
 
-# Create
-class RubricVariantCreate(BaseModel):
-    rubric_id: int
-    description: str = Field(min_length=3)
+class RubricVariantBase(BaseModel):
+    rubric_id: PositiveInt
+    description: constr(min_length=3)
+
+    class Config:
+        orm_mode = True
 
 
-class RubricVariantsCreate(BaseModel):
-    __root__: List[RubricVariantCreate]
+class RubricVariantsBase(BaseModel):
+    __root__: List[RubricVariantBase]
 
     def __iter__(self):
         return iter(self.__root__)
 
-    @validator("__root__", pre=True)
+    @validator("__root__")
     def validate_rubrics(cls, value):
         print(value)
         prev = None
@@ -30,33 +32,34 @@ class RubricVariantsCreate(BaseModel):
             prev = rubric["rubric_id"]
         return value
 
-
-# Show
-class RubricVariantShow(BaseModel):
-    id: int
-    rubric_id: int
-    description: str
-
     class Config:
         orm_mode = True
 
 
-class RubricVariantsShow(BaseModel):
-    __root__: List[RubricVariantShow]
-
-    def __iter__(self):
-        return iter(self.__root__)
-
-    class Config:
-        orm_mode = True
-
-
-# Update
-class RubricVariantUpdate(RubricVariantCreate):
+# Create
+class RubricVariantCreate(RubricVariantBase):
     pass
 
 
-class RubricVariantsUpdate(RubricVariantsCreate):
+class RubricVariantsCreate(RubricVariantsBase):
+    __root__: List[RubricVariantCreate]
+
+
+# Show
+class RubricVariantShow(RubricVariantBase):
+    id: PositiveInt
+
+
+class RubricVariantsShow(RubricVariantsBase):
+    __root__: List[RubricVariantShow]
+
+
+# Update
+class RubricVariantUpdate(RubricVariantBase):
+    pass
+
+
+class RubricVariantsUpdate(RubricVariantsBase):
     __root__: List[RubricVariantUpdate]
 
 
@@ -65,17 +68,17 @@ class RubricVariantsUpdate(RubricVariantsCreate):
 
 # Create
 class RecordCreate(BaseModel):
-    title: str
+    title: constr(min_length=3)
     rubrics: RubricVariantsCreate
-    patient_id: int
+    patient_id: PositiveInt
 
 
 # Show
 class RecordShow(BaseModel):
-    id: int
-    title: str
+    id: PositiveInt
+    title: constr(min_length=3)
     rubrics: List[RubricVariantShow]
-    patient_id: int
+    patient_id: PositiveInt
     date: datetime
 
     class Config:
@@ -84,10 +87,10 @@ class RecordShow(BaseModel):
 
 # Update
 class RecordUpdate(BaseModel):
-    title: Union[str, None] = Field(min_length=3, default=None)
+    title: Union[constr(min_length=3), None]
     rubrics: Union[RubricVariantsUpdate, None]
 
 
 # Delete
 class RecordDeleteResponse(BaseModel):
-    deleted_record_id: int
+    deleted_record_id: PositiveInt

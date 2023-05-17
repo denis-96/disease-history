@@ -7,6 +7,6 @@ run:
 clear revisions:
 	rm -r ./migrations/versions/*
 revision:
-	alembic revision --autogenerate
+	pipenv run alembic revision --autogenerate
 upgrade:
-	alembic upgrade head
+	pipenv run alembic upgrade head

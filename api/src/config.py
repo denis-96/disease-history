@@ -16,6 +16,8 @@ DATABASE_URL = environ.get("DATABASE_URL")
 SECRET_KEY = token_hex(30)
 
 JWT_ALGORITHM = "HS256"
+JWT_TOKEN_EXP = 60 * 10  # 10 min in seconds
+JWT_REFRESH_TOKEN_EXP = 60 * 60 * 24 * 21  # 21 days in seconds
 
 MAIL_HOST = "smtp.gmail.com"
 MAIL_PORT = 587

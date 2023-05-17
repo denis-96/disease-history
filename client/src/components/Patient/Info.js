@@ -1,6 +1,6 @@
 import "./Info.scss";
 
-function Info() {
+function Info({ patient }) {
   return (
     <section className="disease-info">
       <div className="container">
@@ -9,13 +9,23 @@ function Info() {
             <label className="label" htmlFor="patient_name">
               Фамилия и имя
             </label>
-            <input className="input" type="text" id="patient_name" />
+            <input
+              className="input"
+              type="text"
+              id="patient_name"
+              value={patient.full_name}
+            />
           </div>
           <div className="disease-info__field disease-info__field_small">
             <label className="label" htmlFor="patient_age">
               Возраст
             </label>
-            <input className="input" type="number" id="patient_age" />
+            <input
+              className="input"
+              type="number"
+              id="patient_age"
+              value={patient.age}
+            />
           </div>
         </div>
         <div className="disease-info__row">

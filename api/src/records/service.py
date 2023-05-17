@@ -21,25 +21,6 @@ from .schemas import (
 
 class RecordsService:
     @classmethod
-    async def create_record(
-        cls, record_data: RecordCreate, user_id: int, db_session: AsyncSession
-    ) -> TreatmentRecord:
-        patient = await PatientsService.get_patient(
-            record_data.patient_id, user_id, db_session
-        )
-        try:
-            async with db_session.begin():
-                record = TreatmentRecord(title=record_data.title, patient=patient)
-                db_session.add(record)
-                await db_session.flush()
-        except SQLAlchemyError:
-            await db_session.rollback()
-            raise DatabaseError()
-
-        await cls._create_rubric_variants(record_data.rubrics, record, db_session)
-        return record
-
-    @classmethod
     async def get_record(
         cls, record_id: int, user_id: int, db_session: AsyncSession
     ) -> TreatmentRecord:
@@ -69,19 +50,23 @@ class RecordsService:
         return records
 
     @classmethod
-    async def delete_record(
-        cls, record: TreatmentRecord, db_session: AsyncSession
-    ) -> RecordDeleteResponse:
-        record_id = record.id
+    async def create_record(
+        cls, record_data: RecordCreate, user_id: int, db_session: AsyncSession
+    ) -> TreatmentRecord:
+        patient = await PatientsService.get_patient(
+            record_data.patient_id, user_id, db_session
+        )
         try:
             async with db_session.begin():
-                await db_session.delete(record)
+                record = TreatmentRecord(title=record_data.title, patient=patient)
+                db_session.add(record)
                 await db_session.flush()
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
 
-        return RecordDeleteResponse(deleted_record_id=record_id)
+        await cls._create_rubric_variants(record_data.rubrics, record, db_session)
+        return record
 
     @classmethod
     async def update_record(
@@ -106,6 +91,21 @@ class RecordsService:
         )
 
         return record
+
+    @classmethod
+    async def delete_record(
+        cls, record: TreatmentRecord, db_session: AsyncSession
+    ) -> RecordDeleteResponse:
+        record_id = record.id
+        try:
+            async with db_session.begin():
+                await db_session.delete(record)
+                await db_session.flush()
+        except SQLAlchemyError:
+            await db_session.rollback()
+            raise DatabaseError()
+
+        return RecordDeleteResponse(deleted_record_id=record_id)
 
     @classmethod
     async def _create_rubric_variants(

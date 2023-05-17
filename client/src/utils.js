@@ -1,7 +1,12 @@
+import { AUTH } from "./apiEndpoints";
+
 const generateId = () => Math.random().toString(36).substring(2, 12);
 
-const setAuthToken = (token) => localStorage.setItem("token", token);
+const isTokenExpired = () => false;
+const refreshToken = (onSuccess) => {
+  fetch(AUTH.REFRESH, { method: "GET", credentials: "include" })
+    .then((response) => response.json())
+    .then((json) => json.access_token && onSuccess(json.access_token));
+};
 
-const fetchAuthToken = () => localStorage.getItem("token");
-
-export { generateId, setAuthToken, fetchAuthToken };
+export { generateId, isTokenExpired, refreshToken };
