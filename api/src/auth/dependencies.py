@@ -46,7 +46,6 @@ async def get_refresh_token(
     refresh_token: Annotated[str, Cookie(..., alias="refreshToken")],
     db_session: Annotated[AsyncSession, Depends(get_db)],
 ) -> RefreshToken:
-    print(refresh_token)
     db_refresh_token = await AuthService.get_refresh_token(refresh_token, db_session)
     if not db_refresh_token:
         raise InvalidRefreshToken()

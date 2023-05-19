@@ -12,6 +12,7 @@ OAUTH2_TOKEN_URL = environ.get("OAUTH2_TOKEN_URL")
 OAUTH2_CERTS_URL = environ.get("OAUTH2_CERTS_URL")
 
 DATABASE_URL = environ.get("DATABASE_URL")
+TEST_DATABASE_URL = environ.get("TEST_DATABASE_URL")
 
 SECRET_KEY = token_hex(30)
 

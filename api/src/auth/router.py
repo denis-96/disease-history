@@ -59,9 +59,6 @@ async def token(
         Union[str, None], Cookie(..., alias="refreshToken")
     ] = None,
 ) -> AccessToken:
-    if old_refresh_token:
-        await AuthService.expire_refresh_token(old_refresh_token, db_session)
-
     token_params = TokenRequest(
         grant_type=grant_type,
         code=code,
@@ -69,20 +66,14 @@ async def token(
         client_secret=client_secret,
         redirect_uri=redirect_uri,
     )
-    try:
-        google_id_token = await AuthService.get_google_id_token(token_params)
-    except ValidationError:
-        raise HTTPException(400, detail="Invalid data")
-    auth_tokens = await AuthService.authenticate_user(
-        AuthSchema(google_id_token=google_id_token.id_token), db_session
-    )
+    google_id_token = await AuthService.get_google_id_token(token_params)
 
-    response.set_cookie(
-        **AuthService.generate_refresh_token_cookie(auth_tokens.refresh_token).dict(
-            exclude_none=True
-        )
+    return await auth(
+        AuthSchema(google_id_token=google_id_token.id_token),
+        db_session,
+        response,
+        old_refresh_token,
     )
-    return AccessToken(access_token=auth_tokens.access_token)
 
 
 @auth_router.get("/token/refresh")

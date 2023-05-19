@@ -1,5 +1,9 @@
 @import "./variables.scss";
 
+.app {
+  height: 100%;
+}
+
 .container {
   width: 100%;
   padding-right: calc(1.5rem * 0.5);

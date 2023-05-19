@@ -3,11 +3,12 @@ from typing import List, Union
 
 from pydantic import BaseModel, PositiveInt, constr, validator
 
+from ..rubrics.schemas import RubricShow
+
 # Rubric Variants
 
 
 class RubricVariantBase(BaseModel):
-    rubric_id: PositiveInt
     description: constr(min_length=3)
 
     class Config:
@@ -22,14 +23,13 @@ class RubricVariantsBase(BaseModel):
 
     @validator("__root__")
     def validate_rubrics(cls, value):
-        print(value)
         prev = None
         for rubric in value:
-            if prev == rubric["rubric_id"]:
+            if prev == rubric.rubric_id:
                 raise ValueError(
-                    f"could not have more than one rubric variant with rubric_id {rubric['rubric_id']} for one record"
+                    f"could not have more than one rubric variant with rubric_id {rubric.rubric_id} for one record"
                 )
-            prev = rubric["rubric_id"]
+            prev = rubric.rubric_id
         return value
 
     class Config:
@@ -38,7 +38,7 @@ class RubricVariantsBase(BaseModel):
 
 # Create
 class RubricVariantCreate(RubricVariantBase):
-    pass
+    rubric_id: PositiveInt
 
 
 class RubricVariantsCreate(RubricVariantsBase):
@@ -48,6 +48,7 @@ class RubricVariantsCreate(RubricVariantsBase):
 # Show
 class RubricVariantShow(RubricVariantBase):
     id: PositiveInt
+    rubric: RubricShow
 
 
 class RubricVariantsShow(RubricVariantsBase):
@@ -56,7 +57,7 @@ class RubricVariantsShow(RubricVariantsBase):
 
 # Update
 class RubricVariantUpdate(RubricVariantBase):
-    pass
+    rubric_id: PositiveInt
 
 
 class RubricVariantsUpdate(RubricVariantsBase):

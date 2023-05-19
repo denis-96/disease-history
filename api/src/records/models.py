@@ -39,7 +39,7 @@ class RubricVariant(Base):
     description: Mapped[str]
 
     record: Mapped["TreatmentRecord"] = relationship(back_populates="rubrics")
-    rubric: Mapped["Rubric"] = relationship("Rubric")
+    rubric: Mapped["Rubric"] = relationship("Rubric", lazy="joined")
 
     __table_args__ = (UniqueConstraint("rubric_id", "record_id", name="rub_id_rec_id"),)
 

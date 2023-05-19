@@ -10,3 +10,5 @@ revision:
 	pipenv run alembic revision --autogenerate
 upgrade:
 	pipenv run alembic upgrade head
+tests:
+	pipenv run pytest

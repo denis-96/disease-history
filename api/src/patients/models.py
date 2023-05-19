@@ -16,6 +16,7 @@ class Patient(Base):
     complaints: Mapped[Optional[str]]
     anamnesis: Mapped[Optional[str]]
     heredity: Mapped[Optional[str]]
+    treatment_plan: Mapped[Optional[str]]
     treatment_comments: Mapped[Optional[str]]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 

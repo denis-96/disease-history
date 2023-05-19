@@ -10,6 +10,7 @@ class PatientCreate(BaseModel):
     complaints: Union[str, None]
     anamnesis: Union[str, None]
     heredity: Union[str, None]
+    treatment_plan: Union[str, None]
     treatment_comments: Union[str, None]
 
 
@@ -18,8 +19,6 @@ class PatientShow(PatientCreate):
         orm_mode = True
 
     id: int
-    full_name: str
-    age: int
     user_id: int
 
 

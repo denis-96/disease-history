@@ -53,7 +53,7 @@ class AuthService:
 
         except jwt.ExpiredSignatureError:
             raise ExpiredToken()
-        except jwt.InvalidSignatureError:
+        except (jwt.InvalidSignatureError, jwt.DecodeError):
             raise InvalidToken()
         user_data = payload.get("user")
         try:

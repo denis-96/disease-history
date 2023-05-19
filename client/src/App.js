@@ -1,45 +1,23 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import "./App.scss";
 
-import { isTokenExpired, refreshToken } from "./utils";
-import { AUTH } from "./apiEndpoints";
-
-import LoginPage from "./pages/Login/Login";
-import MainPage from "./pages/Main/Main";
-
-const tokenContext = createContext(null);
+import { AUTH_URLS } from "./api/endpoints";
+import useAuth from "./hooks/useAuth";
+import useAuthorizedAxios from "./hooks/useAuthorizedAxios";
+import LoginPage from "./pages/Login";
+import MainPage from "./pages/Main";
 
 function App() {
-  const [token, setToken] = useState(null);
-  const [isUserAuthorized, setIsUserAuthorized] = useState(false);
+  const { auth } = useAuth();
+  const authorizedAxios = useAuthorizedAxios();
 
   useEffect(() => {
-    if (!token || isTokenExpired(token)) {
-      refreshToken(setToken);
-      return;
-    }
+    authorizedAxios.get(AUTH_URLS.CHECK);
+    // eslint-disable-next-line
+  }, []);
 
-    fetch(AUTH.CHECK, {
-      method: "GET",
-      credentials: "include",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => {
-        setIsUserAuthorized(response.ok);
-        return response.json();
-      })
-      .then((json) => console.log(json));
-  }, [token]);
-
-  return (
-    <div className="app">
-      <tokenContext.Provider value={{ token, setToken }}>
-        {isUserAuthorized ? <MainPage /> : <LoginPage />}
-      </tokenContext.Provider>
-    </div>
-  );
+  return <div className="app">{auth?.user ? <MainPage /> : <LoginPage />}</div>;
 }
 
 export default App;
-export { tokenContext };
