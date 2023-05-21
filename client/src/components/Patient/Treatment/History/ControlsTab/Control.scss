@@ -39,11 +39,13 @@
     margin-top: 10px;
     width: 100%;
     border-radius: 10px;
+    border: 1px solid $border-color;
     &_open {
       .control-record__head {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        background-color: $grey-bg;
+        border-radius: 10px 10px 0 0;
+        border: 1px solid $accent-color;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem #34a1c359;
       }
       .control-record__title {
         &::after {
@@ -54,20 +56,15 @@
 
       .control-record__body {
         max-height: 800px;
+        overflow: visible;
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;
-        border: 1px solid $border-color;
-        border-top: none;
       }
     }
   }
   &__head {
-    border-radius: 10px;
-    border: 1px solid $border-color;
+    border-radius: inherit;
     transition: all 0.3s;
-    &:hover {
-      background-color: $grey-bg;
-    }
   }
   &__checkbox {
     margin: 20px 15px;
@@ -107,7 +104,6 @@
     width: calc(100% - 1.2em - 35px);
     font-size: 18px;
     font-weight: 400;
-    transition: 0.5s;
     cursor: pointer;
     &::after {
       content: "";
@@ -125,24 +121,72 @@
   }
 
   &__body {
+    position: relative;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-in-out;
   }
-
+  &__edit-btn {
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid $accent-color;
+    height: 30px;
+    cursor: pointer;
+    z-index: 1;
+    img {
+      height: 100%;
+    }
+    &:hover {
+      background-color: $accent-color;
+    }
+  }
+  &__add-rubric-btn {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid $accent-color;
+    margin-bottom: 20px;
+    padding: 5px 7px;
+    cursor: pointer;
+    z-index: 1;
+    img {
+      width: 20px;
+    }
+    &:hover {
+      background-color: $accent-color;
+    }
+  }
   &__rubric {
     position: relative;
     padding: 20px;
+    &-title {
+      &_new {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+        column-gap: 5px;
+        height: 30px;
+      }
+    }
     &-descr {
       margin-top: 10px;
       color: #242424;
     }
-    &-status-msg {
-      position: absolute;
-      top: 25px;
-      right: 20px;
-      font-size: 14px;
-      color: #464646;
+    &:first-of-type {
+      padding-top: 40px;
     }
+  }
+  &__status-msg {
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    font-size: 14px;
+    color: #464646;
   }
 }

@@ -12,8 +12,18 @@ import removeIcon from "../../../../assets/remove.svg";
 function NewRecord({ onSubmit }) {
   const [controlTitle, setControlTitle] = useState("");
   const [rubricVariants, setRubricVariants] = useState([]);
+  const [isValidationErr, setIsValidationErr] = useState(true);
 
   const { patientId } = usePatientId();
+
+  const onTitleChange = (e) => {
+    if (e.target.value.length < 3) {
+      e.target.classList.add("input_invalid");
+    } else {
+      e.target.classList.remove("input_invalid");
+    }
+    setControlTitle(e.target.value);
+  };
 
   const setRubricAttr = (id, key, value) => {
     setRubricVariants((rubrics) =>
@@ -28,7 +38,7 @@ function NewRecord({ onSubmit }) {
       ...rubrics,
       {
         id: Math.random().toString(36).substring(2, 12),
-        rubricId: "",
+        rubricId: 0,
         description: "",
       },
     ]);
@@ -39,6 +49,22 @@ function NewRecord({ onSubmit }) {
       rubrics.filter((rubric) => rubric.id !== id)
     );
   };
+
+  useEffect(() => {
+    const rubrics = [];
+    for (const variant of rubricVariants) {
+      if (!variant.rubricId || variant.description.length < 3) {
+        setIsValidationErr(true);
+        return;
+      }
+      rubrics.push(+variant.rubricId);
+    }
+    if (rubrics.length > new Set(rubrics).size || controlTitle.length < 3) {
+      setIsValidationErr(true);
+      return;
+    }
+    setIsValidationErr(false);
+  }, [rubricVariants, controlTitle]);
 
   const submitNewRecord = async () => {
     await authorizedAxios.post(
@@ -52,6 +78,14 @@ function NewRecord({ onSubmit }) {
         patient_id: patientId,
       })
     );
+    setRubricVariants([
+      {
+        id: Math.random().toString(36).substring(2, 12),
+        rubricId: 0,
+        description: "",
+      },
+    ]);
+    setControlTitle("");
     onSubmit();
   };
 
@@ -66,8 +100,11 @@ function NewRecord({ onSubmit }) {
           type="text"
           placeholder="Название"
           value={controlTitle}
-          onChange={(e) => setControlTitle(e.target.value)}
+          onChange={onTitleChange}
         />
+        {/* <div className="input-error new-record__title-error">
+          Не меньше трёх символов
+        </div> */}
         <div className="new-record__subheader">Изменившиеся рубрики:</div>
         {rubricVariants.map((rubric) => (
           <div className="new-record__rubric" key={rubric.id}>
@@ -82,9 +119,9 @@ function NewRecord({ onSubmit }) {
               rows="1"
               placeholder="Опишите изменения"
               value={rubric.content}
-              onChange={(e) =>
-                setRubricAttr(rubric.id, "description", e.target.value)
-              }
+              onChange={(e) => {
+                setRubricAttr(rubric.id, "description", e.target.value);
+              }}
             ></textarea>
             <button
               onClick={() => removeRubric(rubric.id)}
@@ -97,7 +134,11 @@ function NewRecord({ onSubmit }) {
         <button onClick={addRubric} className="new-record__add-rubric-btn">
           +
         </button>
-        <button onClick={submitNewRecord} className="new-record__save-btn">
+        <button
+          onClick={submitNewRecord}
+          className="new-record__save-btn"
+          disabled={isValidationErr}
+        >
           Сохранить
         </button>
       </div>

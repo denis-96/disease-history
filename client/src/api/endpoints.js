@@ -4,6 +4,7 @@ const AUTH_URLS = {
   AUTH: "/auth",
   REFRESH: "/auth/token/refresh",
   CHECK: "/auth/check",
+  LOGOUT: "/auth/logout",
 };
 
 const PATIENTS_URLS = {

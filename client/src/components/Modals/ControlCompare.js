@@ -1,33 +1,36 @@
 import "./ControlCompare.scss";
 
 function ControlCompare({ firstControl, secondControl, onClose }) {
-  const rubrics = [];
-  const firstControlRubrics = firstControl.changedRubrics;
-  const secondControlRubrics = secondControl.changedRubrics;
-  const rubricsQty =
-    firstControlRubrics.length > secondControlRubrics.length
-      ? firstControlRubrics.length
-      : secondControlRubrics.length;
+  const firstControlRubrics = firstControl.rubrics;
+  const secondControlRubrics = secondControl.rubrics;
 
-  for (let i = 0; i < rubricsQty; i++) {
-    const firstRubric = firstControlRubrics[i];
-    const secondRubric = secondControlRubrics[i];
-    rubrics.push(
-      <div className="control-compare__rubric" key={i}>
-        <div className="control-compare__rubric-title">
-          {firstRubric ? firstRubric.title : secondRubric.title}
-        </div>
-        <div className="control-compare__rubric-body">
-          <div className="control-compare__rubric-descr">
-            {firstRubric && firstRubric.content}
-          </div>
-          <div className="control-compare__rubric-descr">
-            {secondRubric && secondRubric.content}
-          </div>
-        </div>
+  const rubrics = {};
+  const transformControlRubrics = (controlKey, controlRubrics) => {
+    controlRubrics.forEach((rubric) => {
+      const rubricId = rubric.rubric.id;
+      const rubricData = {
+        rubricTitle: rubric.rubric.title,
+        [controlKey]: rubric.description,
+      };
+      rubrics[rubricId] = rubrics[rubricId]
+        ? { ...rubrics[rubricId], ...rubricData }
+        : rubricData;
+    });
+  };
+  transformControlRubrics("first", firstControlRubrics);
+  transformControlRubrics("second", secondControlRubrics);
+
+  const rubricsJsx = Object.entries(rubrics).map((rubric) => (
+    <div className="control-compare__rubric" key={rubric[0]}>
+      <div className="control-compare__rubric-title">
+        {rubric[1].rubricTitle}
       </div>
-    );
-  }
+      <div className="control-compare__rubric-body">
+        <div className="control-compare__rubric-descr">{rubric[1].first}</div>
+        <div className="control-compare__rubric-descr">{rubric[1].second}</div>
+      </div>
+    </div>
+  ));
 
   return (
     <div
@@ -50,7 +53,7 @@ function ControlCompare({ firstControl, secondControl, onClose }) {
             {secondControl.title}
           </div>
         </div>
-        <div className="control-compare__rubrics">{rubrics}</div>
+        <div className="control-compare__rubrics">{rubricsJsx}</div>
       </div>
     </div>
   );

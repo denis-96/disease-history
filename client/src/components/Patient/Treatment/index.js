@@ -28,7 +28,7 @@ function Treatment() {
 
   return (
     <>
-      <History controls={controls} />
+      <History controls={controls} onUpdate={getRecords} />
       <NewRecord onSubmit={getRecords} />
     </>
   );

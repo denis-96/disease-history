@@ -6,8 +6,8 @@ import { PATIENTS_URLS } from "../../api/endpoints";
 import useAuthorizedAxios from "../../hooks/useAuthorizedAxios";
 
 import Help from "../Modals/Help";
-import questionIcon from "../../assets/question.svg";
 import usePatientId from "../../hooks/usePatientId";
+import useLogout from "../../hooks/useLogout";
 
 function Nav() {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -16,6 +16,12 @@ function Nav() {
 
   const { setPatientId } = usePatientId();
   const authorizedAxios = useAuthorizedAxios();
+  const logout = useLogout();
+
+  const createPatient = async () => {
+    const response = await authorizedAxios.post(PATIENTS_URLS.PATIENT, "{}");
+    setPatientId(response.data?.id);
+  };
 
   useEffect(() => {
     const getPatients = async () => {
@@ -29,14 +35,22 @@ function Nav() {
   return (
     <nav className="nav">
       <div className="nav__container container">
-        <button onClick={() => setIsHelpModalOpen(true)} className="nav__btn">
-          <img src={questionIcon} alt="help" className="nav__btn-icon" />
-        </button>
+        <div className="nav__links">
+          <button className="nav__logout" onClick={logout}>
+            Выход
+          </button>
+          <button
+            className="nav__help"
+            onClick={() => setIsHelpModalOpen(true)}
+          >
+            Помощь
+          </button>
+        </div>
         <div className="nav__dropdown">
           <button className="nav__dropdown-btn">Пациенты</button>
           <div className="nav__dropdown-content">
             <ul className="nav__dropdown-list">
-              {patients &&
+              {patients?.length ? (
                 patients.map((patient) => (
                   <li
                     key={patient.id}
@@ -48,10 +62,16 @@ function Nav() {
                   >
                     {patient.full_name}
                   </li>
-                ))}
+                ))
+              ) : (
+                <p className="nav__dropdown-no-patients">Нет пациентов</p>
+              )}
             </ul>
             <hr />
-            <button className="nav__dropdown-item nav__dropdown-item_btn">
+            <button
+              className="nav__dropdown-item nav__dropdown-item_btn"
+              onClick={createPatient}
+            >
               Добавить
             </button>
           </div>

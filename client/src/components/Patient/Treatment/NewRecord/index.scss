@@ -1,8 +1,8 @@
 @import "../../../../variables.scss";
 
 .new-record {
-  margin-top: 80px;
-  margin-bottom: 100px;
+  padding-top: 90px;
+  padding-bottom: 60px;
   &__header {
     text-align: center;
     font-weight: 700;
@@ -11,9 +11,17 @@
   &__title {
     display: block;
     margin: 0 auto;
-    margin-top: 20px;
+    margin-top: 25px;
     max-width: 450px;
+    &-error {
+      display: block;
+      text-align: center;
+      margin-right: auto;
+      margin-left: auto;
+      transform: translateX(-135px);
+    }
   }
+
   &__subheader {
     margin: 0 auto;
     margin-top: 20px;
@@ -87,6 +95,11 @@
     transition: all 0.3s;
     &:hover {
       background-color: $accent-color;
+    }
+    &:disabled {
+      &:hover {
+        background-color: initial;
+      }
     }
   }
 }

@@ -24,6 +24,6 @@
   row-gap: 30px;
   height: 100%;
   &__error-msg {
-    color: rgb(192, 34, 34);
+    color: $danger-color;
   }
 }

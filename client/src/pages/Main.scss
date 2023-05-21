@@ -4,6 +4,7 @@
   display: inline-block;
   margin-bottom: 0.5rem;
 }
+
 .input,
 .textarea {
   display: block;
@@ -21,16 +22,27 @@
   transition: 0.3s box-shadow;
 
   &:focus {
-    color: #212529;
     background-color: #fff;
     border-color: $accent-color;
     outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(52, 161, 195, 0.35);
+    box-shadow: 0 0 0 0.25rem #34a1c359;
+  }
+  &_invalid {
+    &:focus {
+      border-color: $danger-color;
+      box-shadow: 0 0 0 0.25rem #c3343459;
+    }
   }
 }
 .textarea {
   resize: vertical;
   min-height: calc(1.5em + 0.75rem + calc(1px * 2));
+}
+
+.input-error {
+  font-size: 14px;
+  color: $danger-color;
+  margin-top: 7px;
 }
 
 .overlay {

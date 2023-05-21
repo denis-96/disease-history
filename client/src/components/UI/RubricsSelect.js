@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import "./RubricsSelect.scss";
 
@@ -11,12 +11,20 @@ function RubricsSelect({ onSelect }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRubric, setSelectedRubric] = useState("Выберите рубрику");
+  const mainRef = useRef();
 
   const authorizedAxios = useAuthorizedAxios();
+
+  const closeDropdown = (e) => {
+    if (mainRef.current && isOpen && !mainRef.current.contains(e.target)) {
+      setIsOpen(false);
+    }
+  };
 
   const onRubricClick = (e) => {
     setSelectedRubric(e.target.textContent);
     setIsOpen(false);
+
     onSelect(e.target.getAttribute("data-rubric-id"), e.target.textContent);
   };
 
@@ -28,14 +36,21 @@ function RubricsSelect({ onSelect }) {
     getRubrics();
     // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    isOpen && document.body.addEventListener("mousedown", closeDropdown);
+    return () => {
+      document.body.removeEventListener("mousedown", closeDropdown);
+    };
+    // eslint-disable-next-line
+  }, [isOpen]);
 
   const className = `rubrics-select ${isOpen ? "rubrics-select_active" : ""}`;
 
   return (
-    <div className={className}>
+    <div className={className} ref={mainRef}>
       <button
-        onClick={() => setIsOpen((isOpen) => !isOpen)}
         className="rubrics-select__btn"
+        onClick={() => setIsOpen((isOpen) => !isOpen)}
       >
         <span>{selectedRubric}</span>
         <img src={DropdownIcon} alt="arrow" />
