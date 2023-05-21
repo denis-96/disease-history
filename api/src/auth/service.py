@@ -157,6 +157,7 @@ class AuthService:
             certs = certs_response.json()
         try:
             token_header = jwt.get_unverified_header(token)
+            print(token_header)
             token_key = load_pem_x509_certificate(
                 bytes(certs[token_header["kid"]], encoding="utf-8")
             ).public_key()
@@ -166,6 +167,7 @@ class AuthService:
                 algorithms=[token_header["alg"]],
                 audience=OAUTH2_CLIENT_ID,
             )
+            print(id_info)
             user = GoogleUser(
                 id=id_info["sub"],
                 email=id_info["email"],
@@ -175,7 +177,8 @@ class AuthService:
             jwt.PyJWTError,
             KeyError,
             ValueError,
-        ):
+        ) as e:
+            print(e)
             raise InvalidGoogleToken()
         return user
 
@@ -188,6 +191,7 @@ class AuthService:
                 OAUTH2_TOKEN_URL,
                 data=params.dict(),
             )
+        print(response.json())
         if response.status_code == codes.OK:
             token_data = response.json()
             id_token = token_data.get("id_token")

@@ -1,7 +1,6 @@
 from typing import Annotated, Union
 
-from fastapi import APIRouter, Cookie, Depends, Form, HTTPException, Response
-from pydantic import ValidationError
+from fastapi import APIRouter, Cookie, Depends, Form, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
@@ -78,26 +77,10 @@ async def token(
 
 @auth_router.get("/token/refresh")
 async def refresh_token(
-    old_refresh_token: Annotated[RefreshToken, Depends(get_refresh_token)],
     user: Annotated[UserSchema, Depends(get_user_from_refresh_token)],
-    db_session: Annotated[AsyncSession, Depends(get_db)],
-    response: Response,
 ) -> AccessToken:
-    await AuthService.expire_refresh_token(old_refresh_token, db_session)
-    auth_tokens = await AuthService.create_auth_tokens(user, db_session)
-    response.set_cookie(
-        **AuthService.generate_refresh_token_cookie(auth_tokens.refresh_token).dict(
-            exclude_none=True
-        )
-    )
-    return AccessToken(access_token=auth_tokens.access_token)
-
-
-@auth_router.get("/check")
-async def check_auth(
-    user: Annotated[UserSchema, Depends(get_current_user)]
-) -> CheckAuthResponse:
-    return CheckAuthResponse(authenticated=True, user=user)
+    new_access_token = AuthService.generate_token(UserSchema.from_orm(user))
+    return AccessToken(access_token=new_access_token)
 
 
 @auth_router.get("/logout")
@@ -112,3 +95,10 @@ async def logout(
             refresh_token.refresh_token, expired=True
         ).dict(exclude_none=True)
     )
+
+
+@auth_router.get("/check")
+async def check_auth(
+    user: Annotated[UserSchema, Depends(get_current_user)]
+) -> CheckAuthResponse:
+    return CheckAuthResponse(authenticated=True, user=user)

@@ -12,12 +12,12 @@ engine = create_async_engine(DATABASE_URL, echo=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
-def get_db() -> AsyncSession:
+async def get_db() -> AsyncSession:
     try:
         session = async_session()
         yield session
     finally:
-        session.close
+        await session.close()
 
 
 class Base(DeclarativeBase, AsyncAttrs):

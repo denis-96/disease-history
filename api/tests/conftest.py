@@ -3,33 +3,38 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from src.auth.schemas import UserSchema
+from src.auth.service import AuthService
 from src.config import TEST_DATABASE_URL
-from src.database import get_db
+from src.database import Base, get_db
 from src.main import app
+from src.models import User
 
-engine = create_async_engine(TEST_DATABASE_URL, echo=True)
+engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
-def get_test_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_test_db() -> AsyncGenerator[AsyncSession, None]:
     try:
         db = async_session()
         yield db
     finally:
-        db.close()
+        await db.close()
 
 
 app.dependency_overrides[get_db] = get_test_db
 
 
 @pytest.fixture(autouse=True, scope="session")
-def run_migrations() -> None:
-    import os
-
-    print("running migrations..")
-    os.system("alembic upgrade head")
+async def prepare_database() -> None:
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest.fixture(scope="session")
@@ -39,7 +44,29 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
     loop.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def client() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
+
+
+@pytest.fixture(scope="module")
+async def user():
+    async with async_session() as db_session:
+        yield await AuthService.register_new_user(
+            UserSchema(id=1, email="user@gmail.com"), db_session
+        )
+    async with async_session() as db_session, db_session.begin():
+        await db_session.execute(delete(User).where(User.email == "user@gmail.com"))
+
+
+@pytest.fixture(scope="module")
+async def another_user():
+    async with async_session() as db_session:
+        yield await AuthService.register_new_user(
+            UserSchema(id=2, email="another.user@gmail.com"), db_session
+        )
+    async with async_session() as db_session, db_session.begin():
+        await db_session.execute(
+            delete(User).where(User.email == "another.user@gmail.com")
+        )
