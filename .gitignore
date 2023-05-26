@@ -2,6 +2,4 @@
 **/package-lock.json
 **/venv
 **/.env
-**/alembic.ini
-**/migrations
 **/__pycache__
