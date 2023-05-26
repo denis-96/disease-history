@@ -1,0 +1,50 @@
+@import "../../variables.scss";
+
+.input {
+  display: block;
+  width: 100%;
+  input,
+  textarea {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid $border-color;
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: 0.3s box-shadow;
+
+    &:focus {
+      background-color: #fff;
+      border-color: $accent-color;
+      outline: 0;
+      box-shadow: 0 0 0 0.25rem #34a1c359;
+    }
+  }
+  textarea {
+    resize: vertical;
+    overflow: hidden;
+    min-height: calc(1.5em + 0.75rem + calc(1px * 2));
+  }
+  &_invalid {
+    input,
+    textarea {
+      border-color: $danger-color;
+      box-shadow: 0 0 0 0.25rem #c3343459;
+      &:focus {
+        border-color: $danger-color;
+        box-shadow: 0 0 0 0.25rem #c3343459;
+      }
+    }
+  }
+  &__validation-error {
+    font-size: 14px;
+    color: $danger-color;
+    margin-top: 7px;
+  }
+}

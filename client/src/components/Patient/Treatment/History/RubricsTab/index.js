@@ -1,13 +1,16 @@
+import { useEffect, useRef, useState } from "react";
+
 import "./index.scss";
 
 import RubricsSelect from "../../../../UI/RubricsSelect";
 import Rubric from "./Rubric";
-import { useState } from "react";
 
 function RubricsTab({ controls }) {
   const [rubrics, setRubrics] = useState([]);
+  const selectedRubric = useRef(null);
 
-  const onRubricSelect = (rubricId) => {
+  const onRubricSelect = ({ rubricId }) => {
+    selectedRubric.current = rubricId;
     const rubrics = controls.reduce((prev, { date, title, rubrics }) => {
       const rubric = rubrics.find((rubric) => +rubric.rubric.id === +rubricId);
       return rubric
@@ -24,6 +27,11 @@ function RubricsTab({ controls }) {
     }, []);
     setRubrics(rubrics);
   };
+  useEffect(
+    () => onRubricSelect({ rubricId: selectedRubric.current }),
+    // eslint-disable-next-line
+    [controls]
+  );
 
   return (
     <div className="disease-history__content">

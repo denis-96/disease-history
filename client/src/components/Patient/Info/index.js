@@ -8,6 +8,7 @@ import useAuthorizedAxios from "../../../hooks/useAuthorizedAxios";
 import useDebounce from "../../../hooks/useDebounce";
 
 import LoadingSpinner from "../../UI/Spinner";
+import Input from "../../UI/Input";
 
 function Info() {
   const [patient, setPatient] = useState(null);
@@ -21,22 +22,52 @@ function Info() {
   const unsavedChages = useRef({});
 
   const debouncedPatientUpdate = useDebounce(async () => {
-    await authorizedAxios.patch(
+    const changedKeys = Object.keys(unsavedChages.current);
+    if (
+      changedKeys.includes("full_name") &&
+      unsavedChages.current.full_name.length < 3
+    ) {
+      return;
+    }
+    if (changedKeys.includes("age") && unsavedChages.current.age < 0) {
+      return;
+    }
+
+    const response = await authorizedAxios.patch(
       `${PATIENTS_URLS.PATIENT}?patient_id=${patientId}`,
       JSON.stringify(unsavedChages.current)
     );
     unsavedChages.current = {};
+    setPatient(response.data);
     setIsSaved(true);
   }, 1500);
 
-  const onPatientPropChange = (e) => {
-    const propName = e.target.id;
-    const propValue = e.target.value;
+  const onPatientPropChange = (propName, propValue) => {
     unsavedChages.current[propName] = propValue;
     setIsSaved(false);
-    setPatient((patient) => ({ ...patient, [propName]: propValue }));
     debouncedPatientUpdate();
   };
+
+  const validateName = (name) => {
+    if (name.length < 3) {
+      return {
+        isValid: false,
+        message: "Не меньше 3 символов",
+      };
+    }
+    return { isValid: true };
+  };
+
+  const validateAge = (age) => {
+    if (+age < 0) {
+      return {
+        isValid: false,
+        message: "Только положительные числа",
+      };
+    }
+    return { isValid: true };
+  };
+
   useEffect(() => {
     setIsLoading(true);
     const getPatient = async () => {
@@ -62,24 +93,23 @@ function Info() {
               <label className="label" htmlFor="full_name">
                 Фамилия и имя
               </label>
-              <input
-                className="input"
-                type="text"
+              <Input
                 id="full_name"
-                value={patient.full_name || ""}
-                onChange={onPatientPropChange}
+                initialValue={patient.full_name || ""}
+                onChange={(value) => onPatientPropChange("full_name", value)}
+                onValidation={validateName}
               />
             </div>
             <div className="disease-info__field disease-info__field_small">
               <label className="label" htmlFor="age">
                 Возраст
               </label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 id="age"
-                value={patient.age}
-                onChange={onPatientPropChange}
+                initialValue={patient.age}
+                onChange={(value) => onPatientPropChange("age", value)}
+                onValidation={validateAge}
               />
             </div>
           </div>
@@ -88,14 +118,12 @@ function Info() {
               <label className="label" htmlFor="diagnosis">
                 Диагноз
               </label>
-              <textarea
-                className="textarea"
-                type="text"
+              <Input
                 id="diagnosis"
-                rows="2"
-                value={patient.diagnosis || ""}
-                onChange={onPatientPropChange}
-              ></textarea>
+                initialValue={patient.diagnosis || ""}
+                onChange={(value) => onPatientPropChange("diagnosis", value)}
+                isTextarea
+              ></Input>
             </div>
           </div>
           <div className="disease-info__row">
@@ -103,14 +131,12 @@ function Info() {
               <label className="label" htmlFor="complaints">
                 Жалобы
               </label>
-              <textarea
-                className="textarea"
-                type="text"
+              <Input
                 id="complaints"
-                rows="2"
-                value={patient.complaints || ""}
-                onChange={onPatientPropChange}
-              ></textarea>
+                initialValue={patient.complaints || ""}
+                onChange={(value) => onPatientPropChange("complaints", value)}
+                isTextarea
+              ></Input>
             </div>
           </div>
           <div className="disease-info__row">
@@ -118,14 +144,12 @@ function Info() {
               <label className="label" htmlFor="anamnesis">
                 Анамнез
               </label>
-              <textarea
-                className="textarea"
-                type="text"
+              <Input
                 id="anamnesis"
-                rows="2"
-                value={patient.anamnesis || ""}
-                onChange={onPatientPropChange}
-              ></textarea>
+                initialValue={patient.anamnesis || ""}
+                onChange={(value) => onPatientPropChange("anamnesis", value)}
+                isTextarea
+              ></Input>
             </div>
           </div>
           <div className="disease-info__row">
@@ -133,14 +157,12 @@ function Info() {
               <label className="label" htmlFor="heredity">
                 Наследственность
               </label>
-              <textarea
-                className="textarea"
-                type="text"
+              <Input
                 id="heredity"
-                rows="2"
-                value={patient.heredity || ""}
-                onChange={onPatientPropChange}
-              ></textarea>
+                initialValue={patient.heredity || ""}
+                onChange={(value) => onPatientPropChange("heredity", value)}
+                isTextarea
+              ></Input>
             </div>
           </div>
           <div className="disease-info__row">
@@ -148,14 +170,14 @@ function Info() {
               <label className="label" htmlFor="treatment_plan">
                 План лечения
               </label>
-              <textarea
-                className="textarea"
-                type="text"
+              <Input
                 id="treatment_plan"
-                rows="2"
-                value={patient.treatment_plan || ""}
-                onChange={onPatientPropChange}
-              ></textarea>
+                initialValue={patient.treatment_plan || ""}
+                onChange={(value) =>
+                  onPatientPropChange("treatment_plan", value)
+                }
+                isTextarea
+              ></Input>
             </div>
           </div>
           <div className="disease-info__row">
@@ -163,14 +185,14 @@ function Info() {
               <label className="label" htmlFor="treatment_comments">
                 Комментарии
               </label>
-              <textarea
-                className="textarea"
-                type="text"
+              <Input
                 id="treatment_comments"
-                rows="2"
-                value={patient.treatment_comments || ""}
-                onChange={onPatientPropChange}
-              ></textarea>
+                initialValue={patient.treatment_comments || ""}
+                onChange={(value) =>
+                  onPatientPropChange("treatment_comments", value)
+                }
+                isTextarea
+              ></Input>
             </div>
           </div>
           {isSaved && (

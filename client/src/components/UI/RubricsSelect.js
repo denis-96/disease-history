@@ -6,11 +6,11 @@ import DropdownIcon from "../../assets/dropdown-arrow.svg";
 import { RUBRICS_URLS } from "../../api/endpoints";
 import useAuthorizedAxios from "../../hooks/useAuthorizedAxios";
 
-function RubricsSelect({ onSelect }) {
+function RubricsSelect({ onSelect, validation = { isValid: true } }) {
   const [rubrics, setRubrics] = useState([]);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedRubric, setSelectedRubric] = useState("Выберите рубрику");
+  const [selectedRubric, setSelectedRubric] = useState({});
   const mainRef = useRef();
 
   const authorizedAxios = useAuthorizedAxios();
@@ -22,10 +22,13 @@ function RubricsSelect({ onSelect }) {
   };
 
   const onRubricClick = (e) => {
-    setSelectedRubric(e.target.textContent);
+    const rubric = {
+      rubricId: e.target.getAttribute("data-rubric-id"),
+      title: e.target.textContent,
+    };
+    setSelectedRubric(rubric);
     setIsOpen(false);
-
-    onSelect(e.target.getAttribute("data-rubric-id"), e.target.textContent);
+    onSelect(rubric);
   };
 
   useEffect(() => {
@@ -44,7 +47,9 @@ function RubricsSelect({ onSelect }) {
     // eslint-disable-next-line
   }, [isOpen]);
 
-  const className = `rubrics-select ${isOpen ? "rubrics-select_active" : ""}`;
+  const className = `rubrics-select${isOpen ? " rubrics-select_active" : ""} ${
+    !validation.isValid ? " rubrics-select_invalid" : ""
+  }`;
 
   return (
     <div className={className} ref={mainRef}>
@@ -52,12 +57,12 @@ function RubricsSelect({ onSelect }) {
         className="rubrics-select__btn"
         onClick={() => setIsOpen((isOpen) => !isOpen)}
       >
-        <span>{selectedRubric}</span>
+        <span>{selectedRubric.title || "Выберите рубрику"}</span>
         <img src={DropdownIcon} alt="arrow" />
       </button>
       <div className="rubrics-select__content">
         <ul className="rubrics-select__list">
-          {rubrics?.length &&
+          {rubrics?.length ? (
             rubrics.map((rubric) => (
               <li className="rubrics-select__item" key={rubric.id}>
                 <details>
@@ -76,9 +81,17 @@ function RubricsSelect({ onSelect }) {
                   </ul>
                 </details>
               </li>
-            ))}
+            ))
+          ) : (
+            <div className="rubrics-select__no-rubrics">Нет рубрик</div>
+          )}
         </ul>
       </div>
+      {!validation.isValid && (
+        <div className="rubrics-select__validation-error">
+          {validation.message}
+        </div>
+      )}
     </div>
   );
 }

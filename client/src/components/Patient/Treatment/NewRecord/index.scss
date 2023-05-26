@@ -32,34 +32,31 @@
   }
   &__rubric {
     position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    row-gap: 7px;
     margin: 0 auto;
     margin-top: 10px;
-    display: flex;
     max-width: 900px;
-    justify-content: space-between;
-    column-gap: 10px;
-    &-descr {
-      width: 100%;
-    }
   }
   &__remove-rubric {
     display: block;
     position: absolute;
-    left: 102%;
-    top: 50%;
-    transform: translateY(-50%);
+    right: -5px;
+    top: -5px;
     border: none;
-    background-color: white;
+    background-color: rgba($color: #fff, $alpha: 0);
     transition: 0.2s all;
     cursor: pointer;
     img {
-      filter: invert(31%) sepia(0%) saturate(0%) hue-rotate(4deg)
-        brightness(99%) contrast(90%);
+      filter: none;
       width: 30px;
     }
     &:hover {
       img {
-        filter: none;
+        filter: invert(37%) sepia(28%) saturate(5114%) hue-rotate(339deg)
+          brightness(90%) contrast(98%);
       }
     }
   }

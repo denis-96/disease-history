@@ -6,12 +6,12 @@ import { RECORDS_URLS } from "../../../../../api/endpoints";
 import useAuthorizedAxios from "../../../../../hooks/useAuthorizedAxios";
 
 import RubricsSelect from "../../../../UI/RubricsSelect";
+import Input from "../../../../UI/Input";
 import editIcon from "../../../../../assets/edit.svg";
 import applyIcon from "../../../../../assets/apply.svg";
 
-function Control({ id, title, date, rubrics, toggleSelect }) {
+function Control({ id, title, date, rubrics, toggleSelect, onUpdate }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
   const [newRubrics, setNewRubrics] = useState([]);
@@ -22,11 +22,6 @@ function Control({ id, title, date, rubrics, toggleSelect }) {
   const contentClass = `control-record__content ${
     isOpen ? "control-record__content_open" : ""
   }`;
-
-  const updateTextareaHeight = (el) => {
-    el.style.height = "auto";
-    el.style.height = el.scrollHeight + "px";
-  };
 
   const addNewRubric = () => {
     setNewRubrics((rubrics) => [
@@ -47,13 +42,38 @@ function Control({ id, title, date, rubrics, toggleSelect }) {
     );
   };
 
-  const onRubricChange = (id, rubricId, e) => {
+  const onRubricChange = (id, rubricId, value) => {
     setChangedRubrics((rubrics) => ({
       ...rubrics,
-      [id]: { rubricId, description: e.target.value },
+      [id]: { rubricId, description: value },
     }));
+  };
 
-    updateTextareaHeight(e.target);
+  const validateRubricTitle = (rubricId) => {
+    const allRubrics = [].concat(
+      rubrics.map((rubric) => ({ rubricId: rubric.rubric.id })),
+      newRubrics
+    );
+    if (
+      rubricId === 0 ||
+      allRubrics.filter((variant) => variant.rubricId === rubricId).length < 2
+    ) {
+      return { isValid: true };
+    }
+    return {
+      isValid: false,
+      message: "Нельзя добавить два изменения для одной рубрики",
+    };
+  };
+
+  const validateRubricDescr = (descr) => {
+    if (descr.length < 3) {
+      return {
+        isValid: false,
+        message: "Не меньше 3 символов",
+      };
+    }
+    return { isValid: true };
   };
 
   const transformRubricsData = (rubrics) => {
@@ -64,34 +84,50 @@ function Control({ id, title, date, rubrics, toggleSelect }) {
   };
 
   const saveChanges = async () => {
+    const rubricsIds = [].concat(
+      rubrics.map((rubric) => rubric.rubric.id),
+      newRubrics.map((rubric) => rubric.rubricId)
+    );
+    if (rubricsIds.length > new Set(rubricsIds).size) {
+      return;
+    }
+    const rubricsToSave = [].concat(
+      transformRubricsData(newRubrics),
+      transformRubricsData(Object.values(changedRubrics))
+    );
+    for (let i = 0; i < rubricsToSave.length; i++) {
+      if (rubricsToSave[i].description.length < 3) return;
+    }
     const requestData = {
-      rubrics: [].concat(
-        transformRubricsData(newRubrics),
-        transformRubricsData(Object.values(changedRubrics))
-      ),
+      rubrics: rubricsToSave,
     };
-    authorizedAxios.patch(
+
+    await authorizedAxios.patch(
       `${RECORDS_URLS.RECORD}?record_id=${id}`,
       JSON.stringify(requestData)
     );
+    setNewRubrics([]);
+    setChangedRubrics({});
+    onUpdate();
+    return true;
   };
 
-  const toggleEditMode = () => {
-    setEditMode((editMode) => {
-      if (editMode) {
-        console.log("saving changes...");
-        saveChanges();
-        setNewRubrics([]);
-        setChangedRubrics({});
-      }
-      return !editMode;
-    });
+  const toggleEditMode = async () => {
+    if (editMode) {
+      if (!(await saveChanges()));
+      return;
+    }
+    setEditMode(!editMode);
   };
 
   return (
     <li className="control-record">
       <div className="control-record__date">
-        {new Date(date + "Z").toString()}
+        {new Date(date + "Z").toLocaleString("en-GB", {
+          dateStyle: "short",
+          timeStyle: "short",
+          hour12: false,
+        })}
       </div>
       <div className={contentClass}>
         <div className="control-record__head">
@@ -104,7 +140,7 @@ function Control({ id, title, date, rubrics, toggleSelect }) {
             onClick={() => setIsOpen((isOpen) => !isOpen)}
             className="control-record__title"
           >
-            {title}
+            <div className="control-record__title-text">{title}</div>
           </div>
         </div>
         <div className="control-record__body">
@@ -121,40 +157,39 @@ function Control({ id, title, date, rubrics, toggleSelect }) {
                 {i + 1}. {rubric.rubric.title}
               </div>
 
-              <textarea
-                className="control-record__rubric-descr textarea"
-                value={
-                  typeof changedRubrics[rubric.id]?.description !== "undefined"
-                    ? changedRubrics[rubric.id]?.description
-                    : rubric.description
+              <Input
+                className="control-record__rubric-descr"
+                onChange={(value) =>
+                  onRubricChange(rubric.id, rubric.rubric.id, value)
                 }
-                rows={rubric.description.split("\n").length}
-                onChange={(e) => onRubricChange(rubric.id, rubric.rubric.id, e)}
+                onValidation={validateRubricDescr}
+                initialValue={rubric.description}
                 readOnly={!editMode}
+                isTextarea
               />
 
               {/* <div className="control-record__status-msg">Сохранено</div> */}
             </div>
           ))}
           {editMode &&
-            newRubrics.map((rubric, i) => (
+            newRubrics.map((rubric) => (
               <div className="control-record__rubric" key={rubric.id}>
                 <div className="control-record__rubric-title control-record__rubric-title_new">
                   <RubricsSelect
-                    onSelect={(rubricId) =>
+                    onSelect={({ rubricId }) =>
                       setNewRubricAttr(rubric.id, "rubricId", +rubricId)
                     }
+                    validation={validateRubricTitle(rubric.rubricId)}
                   />
                 </div>
 
-                <textarea
-                  className="control-record__rubric-descr textarea"
-                  value={rubric.description}
-                  rows={rubric.description.split("\n").length}
-                  onChange={(e) => {
-                    setNewRubricAttr(rubric.id, "description", e.target.value);
-                    updateTextareaHeight(e.target);
+                <Input
+                  className="control-record__rubric-descr"
+                  onChange={(value) => {
+                    setNewRubricAttr(rubric.id, "description", value);
                   }}
+                  onValidation={validateRubricDescr}
+                  isTextarea
                 />
 
                 {/* <div className="control-record__status-msg">Сохранено</div> */}

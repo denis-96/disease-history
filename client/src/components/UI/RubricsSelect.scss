@@ -2,15 +2,12 @@
 
 .rubrics-select {
   position: relative;
-  min-width: 240px;
-  height: 100%;
   &__btn {
     display: flex;
-    width: 100%;
-    height: 100%;
+    width: 240px;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
+    padding: 0.375rem 15px;
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
@@ -32,9 +29,9 @@
   &__content {
     position: absolute;
     z-index: 5;
-    width: 100%;
+    width: 240px;
     display: none;
-    top: 115%;
+    top: 110%;
     left: 50%;
     transform: translateX(-50%);
     padding: 5px 15px 15px 15px;
@@ -49,6 +46,7 @@
   &__list {
     max-height: 250px;
     overflow-y: auto;
+    overflow-x: hidden;
     &::-webkit-scrollbar {
       width: 7px;
     }
@@ -88,6 +86,11 @@
       }
     }
   }
+  &__validation-error {
+    padding-top: 7px;
+    color: $danger-color;
+    font-size: 14px;
+  }
   &_active &__content {
     display: block;
   }
@@ -98,6 +101,39 @@
     box-shadow: 0 0 0 0.25rem #34a1c359;
     img {
       transform: rotate(-180deg);
+    }
+  }
+  &_invalid &__btn {
+    border-color: $danger-color;
+    box-shadow: 0 0 0 0.25rem #c3343459;
+  }
+  &__no-rubrics {
+    color: #5f5f5f;
+    margin-top: 10px;
+    font-size: 16px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .rubrics-select {
+    &__btn {
+      width: 200px;
+    }
+    &__content {
+      width: 200px;
+    }
+    &__item {
+      details {
+        summary {
+          display: block;
+        }
+      }
+      ul {
+        li {
+          padding: 7px 10px;
+        }
+      }
     }
   }
 }

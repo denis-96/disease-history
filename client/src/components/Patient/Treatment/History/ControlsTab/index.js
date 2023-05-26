@@ -50,12 +50,6 @@ function ControlsTab({ controls, onUpdate }) {
             Сравнить
           </button>
           <button
-            className="disease-history__tool-bar-btn"
-            disabled={selectedControls.length !== 1}
-          >
-            Изменить
-          </button>
-          <button
             onClick={deleteControls}
             className="disease-history__tool-bar-btn"
             disabled={selectedControls.length <= 0}
@@ -73,6 +67,7 @@ function ControlsTab({ controls, onUpdate }) {
             <Control
               {...control}
               toggleSelect={() => toggleControlSelect(control)}
+              onUpdate={onUpdate}
               key={control.id}
             />
           ))
