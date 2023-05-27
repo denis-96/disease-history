@@ -2,6 +2,7 @@
   "name": "disease-history-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://disease-history.up.railway.app/",
   "proxy": "https://disease-history-api.up.railway.app",
   "dependencies": {
     "@react-oauth/google": "^0.11.0",
@@ -9,7 +10,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "sass": "^1.62.1"
+    "sass": "^1.62.1",
+    "serve": "^14.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
