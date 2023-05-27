@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://disease-history-api.up.railway.app";
 
 const AUTH_URLS = {
   AUTH: "/auth",
