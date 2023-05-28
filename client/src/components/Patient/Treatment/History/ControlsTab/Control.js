@@ -6,12 +6,16 @@ import { RECORDS_URLS } from "../../../../../api/endpoints";
 import useAuthorizedAxios from "../../../../../hooks/useAuthorizedAxios";
 
 import RubricsSelect from "../../../../UI/RubricsSelect";
+import LoadingSpinner from "../../../../UI/Spinner";
 import Input from "../../../../UI/Input";
 import editIcon from "../../../../../assets/edit.svg";
 import applyIcon from "../../../../../assets/apply.svg";
+import crossIcon from "../../../../../assets/cross.svg";
+import plusIcon from "../../../../../assets/plus.svg";
 
 function Control({ id, title, date, rubrics, toggleSelect, onUpdate }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
   const [newRubrics, setNewRubrics] = useState([]);
@@ -82,6 +86,11 @@ function Control({ id, title, date, rubrics, toggleSelect, onUpdate }) {
       description: rubric.description,
     }));
   };
+  const cancelChanges = () => {
+    setNewRubrics([]);
+    setChangedRubrics({});
+    setEditMode(!editMode);
+  };
 
   const saveChanges = async () => {
     const rubricsIds = [].concat(
@@ -98,26 +107,20 @@ function Control({ id, title, date, rubrics, toggleSelect, onUpdate }) {
     for (let i = 0; i < rubricsToSave.length; i++) {
       if (rubricsToSave[i].description.length < 3) return;
     }
+
     const requestData = {
       rubrics: rubricsToSave,
     };
-
+    setIsLoading(true);
     await authorizedAxios.patch(
       `${RECORDS_URLS.RECORD}?record_id=${id}`,
       JSON.stringify(requestData)
     );
     setNewRubrics([]);
     setChangedRubrics({});
-    onUpdate();
-    return true;
-  };
-
-  const toggleEditMode = async () => {
-    if (editMode) {
-      if (!(await saveChanges()));
-      return;
-    }
     setEditMode(!editMode);
+    await onUpdate();
+    setIsLoading(false);
   };
 
   return (
@@ -144,13 +147,34 @@ function Control({ id, title, date, rubrics, toggleSelect, onUpdate }) {
           </div>
         </div>
         <div className="control-record__body">
-          <button className="control-record__edit-btn" onClick={toggleEditMode}>
-            {editMode ? (
-              <img src={applyIcon} alt="save chages" />
-            ) : (
+          {isLoading && <LoadingSpinner className="control-record__loading" />}
+
+          {editMode ? (
+            <>
+              <button
+                className="control-record__cancel-btn"
+                onClick={cancelChanges}
+                disabled={isLoading}
+              >
+                <img src={crossIcon} alt="cancel chages" />
+              </button>
+              <button
+                className="control-record__save-btn"
+                onClick={saveChanges}
+                disabled={isLoading}
+              >
+                <img src={applyIcon} alt="save chages" />
+              </button>
+            </>
+          ) : (
+            <button
+              className="control-record__edit-btn"
+              onClick={() => setEditMode(true)}
+              disabled={isLoading}
+            >
               <img src={editIcon} alt="edit" />
-            )}
-          </button>
+            </button>
+          )}
           {rubrics.map((rubric, i) => (
             <div className="control-record__rubric" key={rubric.id}>
               <div className="control-record__rubric-title">
@@ -199,8 +223,9 @@ function Control({ id, title, date, rubrics, toggleSelect, onUpdate }) {
             <button
               className="control-record__add-rubric-btn"
               onClick={addNewRubric}
+              disabled={isLoading}
             >
-              Добавить рубрику
+              <img src={plusIcon} alt="add rubric" />
             </button>
           )}
         </div>

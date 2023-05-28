@@ -127,45 +127,61 @@
     overflow: hidden;
     transition: max-height 0.2s ease-in-out;
   }
-  &__edit-btn {
+  &__edit-btn,
+  &__cancel-btn,
+  &__save-btn {
     display: block;
     position: absolute;
     top: 15px;
     right: 20px;
     background-color: white;
     border-radius: 10px;
-    border: 2px solid $accent-color;
-    height: 30px;
+    border: none;
     cursor: pointer;
     z-index: 1;
+    transition: 0.3s transform;
     img {
-      height: 100%;
+      display: block;
+      height: 30px;
     }
     &:hover {
-      background-color: $accent-color;
+      transform: scale(1.2);
+    }
+  }
+  &__edit-btn {
+    img {
+      height: 28px;
+    }
+  }
+  &__cancel-btn {
+    right: 60px;
+    img {
+      height: 35px;
     }
   }
   &__add-rubric-btn {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    position: relative;
+    top: -10px;
     background-color: white;
-    border-radius: 10px;
-    border: 2px solid $accent-color;
-    margin-bottom: 20px;
-    padding: 5px 7px;
+    border: 0;
+    border-radius: 5px;
+    margin-left: 20px;
+    margin-bottom: 10px;
     cursor: pointer;
+    transition: 0.3s transform;
     z-index: 1;
     img {
-      width: 20px;
+      display: block;
+      height: 23px;
     }
     &:hover {
-      background-color: $accent-color;
+      transform: scale(1.3);
     }
   }
   &__rubric {
     position: relative;
-    padding: 20px;
+    padding: 40px 20px 0 20px;
     &-title {
       &_new {
         display: flex;
@@ -178,9 +194,15 @@
       margin-top: 10px;
       color: #242424;
     }
-    &:first-of-type {
-      padding-top: 40px;
+    &:last-of-type {
+      padding-bottom: 20px;
     }
+  }
+  &__loading {
+    position: absolute;
+    z-index: 2;
+    top: 40%;
+    left: calc(50% - 25px);
   }
   &__status-msg {
     position: absolute;

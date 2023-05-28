@@ -10,6 +10,7 @@ function Patient() {
 
   return patientId ? (
     <>
+      <button className="patient__delete-btn"></button>
       <Info />
       <Treatment />
     </>

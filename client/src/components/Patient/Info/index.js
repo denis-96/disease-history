@@ -83,9 +83,7 @@ function Info() {
   return (
     <section className="disease-info">
       {isLoading || !patient ? (
-        <div className="disease-info__loading">
-          <LoadingSpinner />
-        </div>
+        <LoadingSpinner />
       ) : (
         <div className="container">
           <div className="disease-info__row">

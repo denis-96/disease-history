@@ -3,6 +3,8 @@
 .new-record {
   padding-top: 90px;
   padding-bottom: 60px;
+  position: relative;
+  z-index: -1;
   &__header {
     text-align: center;
     font-weight: 700;
@@ -18,7 +20,6 @@
       text-align: center;
       margin-right: auto;
       margin-left: auto;
-      transform: translateX(-135px);
     }
   }
 
@@ -98,5 +99,10 @@
         background-color: initial;
       }
     }
+  }
+  &__loading {
+    position: absolute;
+    top: 40%;
+    left: calc(50% - 25px);
   }
 }

@@ -106,52 +106,55 @@ function NewRecord({ onSubmit }) {
     <section className="new-record">
       <div className="container">
         <div className="new-record__header">Добавить контроль</div>
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <>
-            <Input
-              className="new-record__title"
-              type="text"
-              placeholder="Название"
-              onChange={(value) => setControlTitle(value)}
-              onValidation={validateText}
+        <Input
+          className="new-record__title"
+          type="text"
+          placeholder="Название"
+          onChange={(value) => setControlTitle(value)}
+          onValidation={validateText}
+        />
+        <div className="new-record__subheader">Изменившиеся рубрики:</div>
+        {rubricVariants.map((rubric) => (
+          <div className="new-record__rubric" key={rubric.id}>
+            <RubricsSelect
+              onSelect={({ rubricId }) =>
+                setRubricAttr(rubric.id, "rubricId", rubricId)
+              }
+              validation={validateRubricTitle(rubric.rubricId)}
             />
-            <div className="new-record__subheader">Изменившиеся рубрики:</div>
-            {rubricVariants.map((rubric) => (
-              <div className="new-record__rubric" key={rubric.id}>
-                <RubricsSelect
-                  onSelect={({ rubricId }) =>
-                    setRubricAttr(rubric.id, "rubricId", rubricId)
-                  }
-                  validation={validateRubricTitle(rubric.rubricId)}
-                />
-                <Input
-                  className="new-record__rubric-descr"
-                  type="text"
-                  placeholder="Опишите изменения"
-                  onChange={(value) => {
-                    setRubricAttr(rubric.id, "description", value);
-                  }}
-                  onValidation={validateText}
-                  isTextarea
-                ></Input>
-                <button
-                  onClick={() => removeRubric(rubric.id)}
-                  className="new-record__remove-rubric"
-                >
-                  <img src={removeIcon} alt="remove" />
-                </button>
-              </div>
-            ))}
-            <button onClick={addRubric} className="new-record__add-rubric-btn">
-              +
+            <Input
+              className="new-record__rubric-descr"
+              type="text"
+              placeholder="Опишите изменения"
+              onChange={(value) => {
+                setRubricAttr(rubric.id, "description", value);
+              }}
+              onValidation={validateText}
+              isTextarea
+            ></Input>
+            <button
+              onClick={() => removeRubric(rubric.id)}
+              className="new-record__remove-rubric"
+            >
+              <img src={removeIcon} alt="remove" />
             </button>
-            <button onClick={submitNewRecord} className="new-record__save-btn">
-              Сохранить
-            </button>
-          </>
-        )}
+          </div>
+        ))}
+        <button
+          onClick={addRubric}
+          className="new-record__add-rubric-btn"
+          disabled={isLoading}
+        >
+          +
+        </button>
+        <button
+          onClick={submitNewRecord}
+          className="new-record__save-btn"
+          disabled={isLoading}
+        >
+          Сохранить
+        </button>
+        {isLoading && <LoadingSpinner className="new-record__loading" />}
       </div>
     </section>
   );

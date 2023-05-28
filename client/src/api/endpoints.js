@@ -1,4 +1,4 @@
-const BASE_URL = "https://disease-history-api.up.railway.app";
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 const AUTH_URLS = {
   AUTH: "/auth",
