@@ -118,5 +118,11 @@
       color: #5f5f5f;
       font-size: 14px;
     }
+    &-loading {
+      margin-top: 5px !important;
+      width: 25px !important;
+      height: 25px !important;
+      border-width: 5px !important;
+    }
   }
 }

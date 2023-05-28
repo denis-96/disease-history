@@ -40,12 +40,8 @@ const useAuthorizedAxios = () => {
             error?.response?.status === 401) &&
           !prevRequest?.sent
         ) {
-          prevRequest.sent = true;
-          const newAccessToken = await refreshToken();
-          prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-          return authorizedAxios(prevRequest);
+          setAuth({});
         }
-        setAuth({});
         return Promise.reject(error);
       }
     );

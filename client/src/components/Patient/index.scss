@@ -1,8 +1,27 @@
-.choose-patient {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: calc(100% - 50px);
-  font-size: 20px;
-  color: #5f5f5f;
+.patient {
+  &__delete-btn {
+    display: block;
+    background-color: white;
+    margin-left: auto;
+    margin-top: 5px;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s transform;
+    img {
+      display: block;
+      height: 27px;
+    }
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+  &__choose-msg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100% - 50px);
+    font-size: 20px;
+    color: #5f5f5f;
+  }
 }
