@@ -5,13 +5,14 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
 from src.auth.schemas import UserSchema
 from src.auth.service import AuthService
 from src.config import TEST_DATABASE_URL
 from src.database import Base, get_db
 from src.main import app
 from src.models import User
+from src.rubrics.schemas import RubricCreate, RubricSectionCreate
+from src.rubrics.service import RubricsService
 
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
@@ -32,6 +33,19 @@ app.dependency_overrides[get_db] = get_test_db
 async def prepare_database() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    async with async_session() as db_session:
+        section_id = (
+            await RubricsService.create_rubric_sections(
+                [RubricSectionCreate(title="Пищеварительная система")], db_session
+            )
+        )[0].id
+        await RubricsService.create_rubrics(
+            [
+                RubricCreate(section_id=section_id, title="Желудок"),
+                RubricCreate(section_id=section_id, title="Пищевод"),
+            ],
+            db_session,
+        )
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

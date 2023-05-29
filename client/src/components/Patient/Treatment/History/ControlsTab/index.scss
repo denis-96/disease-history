@@ -19,7 +19,7 @@
       border: none;
       border-radius: 5px;
       padding: 5px 8px;
-      background-color: white;
+      background-color: $grey-bg;
       cursor: pointer;
       &::after {
         content: "";
@@ -42,8 +42,8 @@
 
       &:disabled,
       &:disabled &:hover {
-        color: #303030;
-        background-color: white;
+        background-color: $grey-bg;
+        color: #727272;
         cursor: default;
       }
     }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import "./index.scss";
 
@@ -12,7 +12,7 @@ import LoadingSpinner from "../../../UI/Spinner";
 import removeIcon from "../../../../assets/cross.svg";
 
 function NewRecord({ onSubmit }) {
-  const [controlTitle, setControlTitle] = useState("");
+  const controlTitle = useRef("");
   const [rubricVariants, setRubricVariants] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,6 +67,9 @@ function NewRecord({ onSubmit }) {
     );
   };
   const submitNewRecord = async () => {
+    if (controlTitle.current.length < 3) {
+      return;
+    }
     const rubrics = [];
     for (let i = 0; i < rubricVariants.length; i++) {
       const variant = rubricVariants[i];
@@ -82,7 +85,7 @@ function NewRecord({ onSubmit }) {
     await authorizedAxios.post(
       RECORDS_URLS.RECORD,
       JSON.stringify({
-        title: controlTitle,
+        title: controlTitle.current,
         rubrics: rubricVariants.map((rubric) => ({
           description: rubric.description,
           rubric_id: rubric.rubricId,
@@ -90,7 +93,7 @@ function NewRecord({ onSubmit }) {
         patient_id: patientId,
       })
     );
-    setControlTitle("");
+    controlTitle.current = "";
     setRubricVariants([
       {
         id: Math.random().toString(36).substring(2, 12),
@@ -110,7 +113,7 @@ function NewRecord({ onSubmit }) {
           className="new-record__title"
           type="text"
           placeholder="Название"
-          onChange={(value) => setControlTitle(value)}
+          onChange={(value) => (controlTitle.current = value)}
           onValidation={validateText}
         />
         <div className="new-record__subheader">Изменившиеся рубрики:</div>

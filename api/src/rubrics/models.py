@@ -1,6 +1,7 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
+
+from sqlalchemy import ForeignKey, asc
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
 
@@ -11,7 +12,9 @@ class RubricSection(Base):
     title: Mapped[str]
 
     rubrics: Mapped[List["Rubric"]] = relationship(
-        back_populates="section", cascade="all, delete-orphan"
+        back_populates="section",
+        cascade="all, delete-orphan",
+        order_by=lambda: asc(Rubric.id),
     )
 
     def __repr__(self):

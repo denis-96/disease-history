@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, asc
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -22,7 +22,9 @@ class Patient(Base):
 
     user: Mapped["User"] = relationship(back_populates="patients")
     treatment_records: Mapped[List["TreatmentRecord"]] = relationship(
-        back_populates="patient", cascade="all, delete-orphan"
+        back_populates="patient",
+        cascade="all, delete-orphan",
+        order_by=lambda: asc(TreatmentRecord.date),
     )
 
     def __repr__(self):

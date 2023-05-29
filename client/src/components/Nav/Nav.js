@@ -26,7 +26,7 @@ function Nav() {
     if (loadTimeout.current) {
       return;
     }
-    loadTimeout.current = setTimeout(() => (loadTimeout.current = null), 3000);
+    loadTimeout.current = setTimeout(() => (loadTimeout.current = null), 5000);
     setArePatientsLoading(true);
     const response = await authorizedAxios.get(PATIENTS_URLS.ALL);
     setPatients(response.data);

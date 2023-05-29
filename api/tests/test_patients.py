@@ -151,7 +151,7 @@ async def test_bad_update_patient(client: AsyncClient, user, another_user):
     assert res.status_code == codes.UNPROCESSABLE_ENTITY
 
 
-async def test_good_update_patient():
+async def test_good_update_patient(client: AsyncClient, user):
     update_data = {
         "full_name": "Новое имя",
         "age": 30,
@@ -162,6 +162,17 @@ async def test_good_update_patient():
         "treatment_plan": "Не следует, однако забывать, что новая модель организационной деятельности требуют определения и уточнения форм развития. ",
         "treatment_comments": " Таким образом консультация с широким активом влечет за собой процесс внедрения и модернизации соответствующий условий активизации. Таким образом рамки и место обучения кадров представляет собой интересный экспе",
     }
+    res = await client.patch(
+        "/patient",
+        params={"patient_id": 1},
+        json=update_data,
+        headers={"Authorization": f"Bearer {user.access_token}"},
+    )
+    json = res.json()
+    assert res.status_code == codes.OK
+    assert json.pop("id") == 1
+    assert json.pop("user_id") > 0
+    assert json == update_data
 
 
 async def test_bad_delete_patient(client: AsyncClient, another_user):

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import ForeignKey, UniqueConstraint, func
+from sqlalchemy import ForeignKey, UniqueConstraint, asc, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -20,7 +20,10 @@ class TreatmentRecord(Base):
 
     patient: Mapped["Patient"] = relationship(back_populates="treatment_records")
     rubrics: Mapped[List["RubricVariant"]] = relationship(
-        back_populates="record", cascade="all, delete-orphan", lazy="joined"
+        back_populates="record",
+        cascade="all, delete-orphan",
+        lazy="joined",
+        order_by=lambda: asc(RubricVariant.rubric_id),
     )
 
     def __repr__(self):

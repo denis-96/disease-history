@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy import asc
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -12,7 +13,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
 
     patients: Mapped[List["Patient"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user",
+        cascade="all, delete-orphan",
+        order_by=lambda: asc(Patient.full_name),
     )
     refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"

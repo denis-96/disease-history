@@ -56,6 +56,9 @@ class RecordsService:
         patient = await PatientsService.get_patient(
             record_data.patient_id, user_id, db_session
         )
+        rubric_variants = await cls._validate_rubric_variants(
+            record_data.rubrics, db_session
+        )
         try:
             async with db_session.begin():
                 record = TreatmentRecord(title=record_data.title, patient=patient)
@@ -65,7 +68,7 @@ class RecordsService:
             await db_session.rollback()
             raise DatabaseError()
 
-        await cls._create_rubric_variants(record_data.rubrics, record, db_session)
+        await cls._create_rubric_variants(rubric_variants, record, db_session)
         return record
 
     @classmethod
@@ -108,19 +111,24 @@ class RecordsService:
         return RecordDeleteResponse(deleted_record_id=record_id)
 
     @classmethod
-    async def _create_rubric_variants(
-        cls,
-        rubric_variants_data: RubricVariantsCreate,
-        record: TreatmentRecord,
-        db_session: AsyncSession,
+    async def _validate_rubric_variants(
+        cls, rubric_variants_data: RubricVariantsCreate, db_session: AsyncSession
     ) -> List[RubricVariant]:
-        rubric_variants = [
+        return [
             RubricVariant(
                 description=variant.description,
                 rubric=await RubricsService.get_rubric(variant.rubric_id, db_session),
             )
             for variant in rubric_variants_data
         ]
+
+    @classmethod
+    async def _create_rubric_variants(
+        cls,
+        rubric_variants: List[RubricVariant],
+        record: TreatmentRecord,
+        db_session: AsyncSession,
+    ) -> List[RubricVariant]:
         try:
             async with db_session.begin():
                 (await record.awaitable_attrs.rubrics).extend(rubric_variants)
@@ -154,4 +162,7 @@ class RecordsService:
         except SQLAlchemyError:
             await db_session.rollback()
             raise DatabaseError()
+        uncreated_variants = await cls._validate_rubric_variants(
+            uncreated_variants, db_session
+        )
         return await cls._create_rubric_variants(uncreated_variants, record, db_session)

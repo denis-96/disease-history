@@ -16,7 +16,7 @@ function Info() {
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { patientId } = usePatientId();
+  const { patientId, setPatientId } = usePatientId();
   const authorizedAxios = useAuthorizedAxios();
 
   const unsavedChages = useRef({});
@@ -77,7 +77,11 @@ function Info() {
       setPatient(response.data);
       setIsLoading(false);
     };
-    getPatient();
+    getPatient().catch((e) => {
+      if (e.response.status === 404) {
+        setPatientId(null);
+      }
+    });
     // eslint-disable-next-line
   }, [patientId]);
   return (
