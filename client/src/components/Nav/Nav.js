@@ -38,6 +38,9 @@ function Nav() {
     setPatientId(response.data?.id);
   };
 
+  if (isHelpModalOpen) document.body.style.overflowY = "hidden";
+  else document.body.style.overflowY = null;
+
   return (
     <nav className="nav">
       <div className="nav__container container">

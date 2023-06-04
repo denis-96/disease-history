@@ -1,13 +1,12 @@
 @import "../../variables.scss";
 
 .control-compare {
-  position: fixed;
+  position: absolute;
   padding: 20px;
   z-index: 7;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
-  max-height: 85%;
   border-radius: 10px;
   border: 1px solid $border-color;
   background-color: white;
@@ -56,41 +55,44 @@
     }
   }
   &__rubrics {
-    margin-top: 20px;
-    height: 73%;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
-    &::-webkit-scrollbar {
-      width: 7px;
-    }
-    &::-webkit-scrollbar-track {
-      border-radius: 25px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: #ccc;
-      border-radius: 25px;
-    }
+    margin-top: 10px;
+    height: 70vh;
+    overflow: auto;
+    border-radius: 10px;
   }
   &__rubric {
     width: 100%;
     margin-bottom: 15px;
     border-radius: 10px;
-    border: 1px solid $border-color;
     &-title {
       display: flex;
+      position: sticky;
+      top: 0px;
       justify-content: center;
       align-items: center;
       background-color: $grey-bg;
       height: 40px;
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
-      border-bottom: 1px solid $border-color;
+      border: 1px solid $border-color;
       font-weight: 700;
+      &::before {
+        content: "";
+        position: absolute;
+        width: 98%;
+        height: 4px;
+        top: -4px;
+        background-color: white;
+        border-bottom: 1px solid $border-color;
+      }
     }
     &-body {
       display: flex;
       justify-content: space-between;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      border: 1px solid $border-color;
+      border-top: none;
     }
     &-descr {
       width: 50%;
