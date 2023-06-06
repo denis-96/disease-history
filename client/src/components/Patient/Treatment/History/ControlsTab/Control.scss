@@ -22,7 +22,7 @@
     top: 3px;
     left: -26px;
     width: 2px;
-    height: 130%;
+    height: calc(100% + 20px);
     background-color: #212529;
   }
   &:last-child {
@@ -125,7 +125,7 @@
     position: relative;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
   }
   &__edit-btn,
   &__cancel-btn,
