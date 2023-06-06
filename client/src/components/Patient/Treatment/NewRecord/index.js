@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./index.scss";
 
@@ -12,9 +12,10 @@ import LoadingSpinner from "../../../UI/Spinner";
 import removeIcon from "../../../../assets/cross.svg";
 
 function NewRecord({ onSubmit }) {
-  const controlTitle = useRef("");
+  const [controlTitle, setControlTitle] = useState("");
   const [rubricVariants, setRubricVariants] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErr, setValidationErr] = useState(null);
 
   const { patientId } = usePatientId();
 
@@ -67,25 +68,34 @@ function NewRecord({ onSubmit }) {
     );
   };
   const submitNewRecord = async () => {
-    if (controlTitle.current.length < 3) {
+    if (controlTitle.length < 3) {
+      if (!controlTitle) setValidationErr("Заполните все поля!");
+      else setValidationErr("Исправьте ошибки!");
+      return;
+    }
+    if (!rubricVariants.length) {
+      setValidationErr("Добавьте хотя бы одну рубрику!");
       return;
     }
     const rubrics = [];
     for (let i = 0; i < rubricVariants.length; i++) {
       const variant = rubricVariants[i];
       if (variant.description.length < 3) {
+        if (!variant.description) setValidationErr("Заполните все поля!");
+        else setValidationErr("Исправьте ошибки!");
         return;
       }
       rubrics.push(variant.rubricId);
     }
     if (rubrics.length > new Set(rubrics).size) {
+      setValidationErr("Исправьте ошибки!");
       return;
     }
     setIsLoading(true);
     await authorizedAxios.post(
       RECORDS_URLS.RECORD,
       JSON.stringify({
-        title: controlTitle.current,
+        title: controlTitle,
         rubrics: rubricVariants.map((rubric) => ({
           description: rubric.description,
           rubric_id: rubric.rubricId,
@@ -93,7 +103,7 @@ function NewRecord({ onSubmit }) {
         patient_id: patientId,
       })
     );
-    controlTitle.current = "";
+    setControlTitle("");
     setRubricVariants([
       {
         id: Math.random().toString(36).substring(2, 12),
@@ -105,6 +115,18 @@ function NewRecord({ onSubmit }) {
     onSubmit();
   };
   useEffect(addRubric, []);
+  useEffect(() => {
+    if (validationErr) {
+      const timerId = setTimeout(() => {
+        setValidationErr(null);
+      }, 3000);
+      if (validationErr)
+        return () => {
+          clearTimeout(timerId);
+        };
+    }
+  }, [validationErr]);
+
   return (
     <section className="new-record">
       <div className="container">
@@ -113,8 +135,9 @@ function NewRecord({ onSubmit }) {
           className="new-record__title"
           type="text"
           placeholder="Название"
-          onChange={(value) => (controlTitle.current = value)}
+          onChange={(value) => setControlTitle(value)}
           onValidation={validateText}
+          reset={!controlTitle.length}
         />
         <div className="new-record__subheader">Изменившиеся рубрики:</div>
         {rubricVariants.map((rubric) => (
@@ -152,11 +175,16 @@ function NewRecord({ onSubmit }) {
         </button>
         <button
           onClick={submitNewRecord}
-          className="new-record__save-btn"
+          className={`new-record__save-btn${
+            validationErr ? " new-record__save-btn_invalid" : ""
+          }`}
           disabled={isLoading}
         >
           Сохранить
         </button>
+        {validationErr && (
+          <div className="new-record__validation-error">{validationErr}</div>
+        )}
         {isLoading && <LoadingSpinner className="new-record__loading" />}
       </div>
     </section>

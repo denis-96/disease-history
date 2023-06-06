@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Input.scss";
 
 function Input({
@@ -13,6 +13,7 @@ function Input({
   type = "text",
   placeholder = "",
   readOnly = false,
+  reset = false,
 }) {
   const [value, setValue] = useState(initialValue);
   const [validationErr, setValidationErr] = useState(null);
@@ -34,6 +35,9 @@ function Input({
 
     onChange(value);
   };
+  useEffect(() => {
+    reset && setValue("");
+  }, [reset]);
   return (
     <div className={inputClass}>
       {!isTextarea ? (

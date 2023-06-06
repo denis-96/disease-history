@@ -9,6 +9,7 @@ function MainPage() {
     <PatientProvider>
       <Nav />
       <Patient />
+      <footer className="footer" />
     </PatientProvider>
   );
 }
