@@ -20,6 +20,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "https://disease-history.up.railway.app",
+    "https://master.d20hqkmcdd73s9.amplifyapp.com"
 ]
 
 app.add_middleware(
