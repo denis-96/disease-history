@@ -1,0 +1,18 @@
+# fly.toml app configuration file generated for disease-history-client on 2023-07-31T23:09:16+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "disease-history-client"
+primary_region = "otp"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]

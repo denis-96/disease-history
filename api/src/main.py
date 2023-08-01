@@ -20,6 +20,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "https://disease-history.up.railway.app",
+    "https://disease-history-client.fly.dev",
 ]
 
 app.add_middleware(

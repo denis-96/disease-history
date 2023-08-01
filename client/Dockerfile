@@ -13,7 +13,8 @@ RUN npm run build
 
 FROM nginx:stable-alpine
 
-ARG PORT
+ARG PORT=8080
+ENV PORT=8080
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 

@@ -1,0 +1,17 @@
+# fly.toml app configuration file generated for disease-history-api on 2023-07-31T21:51:43+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "disease-history-api"
+primary_region = "otp"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+[env]
+  PORT=8080
